@@ -2,7 +2,9 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](frontend/LICENSE)
 
-This monorepo demonstrates an automated UI testing agent powered by OpenAI's CUA model and [computer use tool](https://platform.openai.com/docs/guides/tools-computer-use). It contains three applications that work together:
+This monorepo demonstrates how you can use OpenAI's CUA model and [computer use tool](https://platform.openai.com/docs/guides/tools-computer-use) to automate frontend testing. It uses [Playwright](https://playwright.dev) to spin up a browser instance and navigate to the web app to be tested. The CUA model then follows the provided test case and executes actions on the interface until the test case is done. 
+
+The repo contains three applications that work together:
 
 - **frontend** – Next.js web interface used to configure tests and watch them run.
 - **cua-server** – Node service that communicates with the OpenAI CUA model and drives Playwright to interact in a browser with the sample app.
@@ -58,7 +60,7 @@ This monorepo demonstrates an automated UI testing agent powered by OpenAI's CUA
 
    - Frontend UI: http://localhost:3000
    - Sample app: http://localhost:3005
-   - CUA server: ws://localhost:8000
+   - CUA server: [ws://localhost:8080](http://localhost:8080)
 
    Navigate to [localhost:3000](http://localhost:3000) to see the frontend UI and run the demo.
 
