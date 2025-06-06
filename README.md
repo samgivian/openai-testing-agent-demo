@@ -8,6 +8,8 @@ This monorepo demonstrates an automated UI testing agent powered by OpenAI's CUA
 - **cua-server** – Node service that communicates with the OpenAI CUA model and drives Playwright to interact in a browser with the sample app.
 - **sample-test-app** – Example e‑commerce site used as an example app to test by the agent.
 
+![screenshot](./screenshot.jpg)
+
 > [!CAUTION]  
 > Computer use is in preview. Because the model is still in preview and may be susceptible to exploits and inadvertent mistakes, we discourage trusting it in authenticated environments or for high-stakes tasks.
 
