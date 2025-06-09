@@ -2,7 +2,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](frontend/LICENSE)
 
-This monorepo demonstrates how you can use OpenAI's CUA model and [computer use tool](https://platform.openai.com/docs/guides/tools-computer-use) to automate frontend testing. It uses [Playwright](https://playwright.dev) to spin up a browser instance and navigate to the web app to be tested. The CUA model then follows the provided test case and executes actions on the interface until the test case is done. 
+This monorepo demonstrates how you can use OpenAI's CUA model and [computer use tool](https://platform.openai.com/docs/guides/tools-computer-use) to automate frontend testing. It uses [Playwright](https://playwright.dev) to spin up a browser instance and navigate to the web app to be tested. The CUA model then follows the provided test case and executes actions on the interface until the test case is done.  
 
 The repo contains three applications that work together:
 
