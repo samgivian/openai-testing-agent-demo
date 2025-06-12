@@ -21,7 +21,7 @@ The repo contains three applications that work together:
 
    ```bash
    git clone https://github.com/openai/openai-testing-agent-demo
-   cd testing-agent-demo
+   cd openai-testing-agent-demo
    ```
 
 2. **Prepare environment files**
