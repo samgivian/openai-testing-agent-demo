@@ -20,7 +20,7 @@ The repo contains three applications that work together:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/openai/testing-agent-demo
+   git clone https://github.com/openai/openai-testing-agent-demo
    cd testing-agent-demo
    ```
 
