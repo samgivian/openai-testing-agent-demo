@@ -17,11 +17,13 @@ interface TestScriptState {
     status: string;
     step_reasoning: string;
     image_path?: string;
+    domContent?: string;
   }>;
 }
 
 interface Task {
   base64Image: string;
+  domContent?: string;
   userInstruction?: string;
   resolve: (value: any) => void;
   reject: (error: any) => void;
@@ -144,11 +146,18 @@ class TestScriptReviewAgent {
    */
   async checkTestScriptStatus(
     base64Image: string,
+    domContent?: string,
     userInstruction?: string
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       // Enqueue the new task.
-      this.taskQueue.push({ base64Image, userInstruction, resolve, reject });
+      this.taskQueue.push({
+        base64Image,
+        domContent,
+        userInstruction,
+        resolve,
+        reject,
+      });
       this.processQueue();
     });
   }
@@ -161,11 +170,12 @@ class TestScriptReviewAgent {
     this.processingQueue = true;
 
     while (this.taskQueue.length > 0) {
-      const { base64Image, userInstruction, resolve, reject } =
+      const { base64Image, domContent, userInstruction, resolve, reject } =
         this.taskQueue.shift()!;
       try {
         const result = await this.processTestScriptStatus(
           base64Image,
+          domContent,
           userInstruction
         );
         resolve(result);
@@ -182,6 +192,7 @@ class TestScriptReviewAgent {
    */
   private async processTestScriptStatus(
     base64Image: string,
+    domContent?: string,
     userInstruction?: string
   ): Promise<any> {
     logger.debug(
@@ -312,7 +323,7 @@ class TestScriptReviewAgent {
         logger.error("Error saving screenshot", err);
       }
 
-      // Iterate through steps and attach the screenshot path only for those with a status change.
+      // Iterate through steps and attach the screenshot path and DOM only for those with a status change.
       for (const newStep of newState.steps) {
         const oldStep = oldSteps.find(
           (s) => s.step_number === newStep.step_number
@@ -324,8 +335,14 @@ class TestScriptReviewAgent {
           ) {
             newStep.image_path =
               "/test_results/" + this.runFolder + "/" + screenshotFilename;
+            if (domContent) {
+              newStep.domContent = domContent;
+            }
           } else if (oldStep.image_path) {
             newStep.image_path = oldStep.image_path;
+            if (oldStep.domContent) {
+              newStep.domContent = oldStep.domContent;
+            }
           }
         }
       }
@@ -335,8 +352,13 @@ class TestScriptReviewAgent {
         const oldStep = oldSteps.find(
           (s) => s.step_number === newStep.step_number
         );
-        if (oldStep && oldStep.image_path) {
-          newStep.image_path = oldStep.image_path;
+        if (oldStep) {
+          if (oldStep.image_path) {
+            newStep.image_path = oldStep.image_path;
+          }
+          if (oldStep.domContent) {
+            newStep.domContent = oldStep.domContent;
+          }
         }
       }
     }
