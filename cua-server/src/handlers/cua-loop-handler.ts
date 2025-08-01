@@ -55,10 +55,15 @@ export async function cuaLoopHandler(
     const screenshot_before_login = await page.screenshot();
     const screenshot_before_login_base64 =
       screenshot_before_login.toString("base64");
+    const dom_before_login = await page.evaluate(
+      () => document.documentElement.outerHTML
+    );
 
     // Asynchronously check the status of the test script.
-    const testScriptReviewResponsePromise =
-      testCaseReviewAgent.checkTestScriptStatus(screenshot_before_login_base64);
+    const testScriptReviewResponsePromise = testCaseReviewAgent.checkTestScriptStatus(
+      screenshot_before_login_base64,
+      dom_before_login
+    );
 
     // Asynchronously emit the test script review response to the socket.
     testScriptReviewResponsePromise.then((testScriptReviewResponse) => {
@@ -98,11 +103,15 @@ export async function cuaLoopHandler(
       const screenshot_after_login = await page.screenshot();
       const screenshot_after_login_base64 =
         screenshot_after_login.toString("base64");
+      const dom_after_login = await page.evaluate(
+        () => document.documentElement.outerHTML
+      );
 
       // Asynchronously check the status of the test script.
       const testScriptReviewResponsePromise_after_login =
         testCaseReviewAgent.checkTestScriptStatus(
-          screenshot_after_login_base64
+          screenshot_after_login_base64,
+          dom_after_login
         );
 
       // Asynchronously emit the test script review response to the socket.
