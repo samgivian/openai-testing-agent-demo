@@ -22,12 +22,6 @@ const displayHeight: number = parseInt(process.env.DISPLAY_HEIGHT || "768", 10);
 
 const tools = [
   {
-    type: "computer_use_preview",
-    display_width: displayWidth,
-    display_height: displayHeight,
-    environment: "browser",
-  },
-  {
     type: "function",
     name: "mark_done",
     description:
@@ -45,6 +39,9 @@ export interface ModelInput {
   screenshotBase64: string;
   previousResponseId?: string;
   lastCallId?: string;
+  footerContent?: string;
+  testResults?: string;
+  domContent?: string;
 }
 
 // Helper to construct and send a request to the CUA model
@@ -87,7 +84,7 @@ async function callCUAModel(input: any[], previousResponseId?: string) {
  * If no lastCallId is provided, it sends an initial query.
  */
 export async function sendInputToModel(
-  { screenshotBase64, previousResponseId, lastCallId }: ModelInput,
+  { screenshotBase64, previousResponseId, lastCallId, domContent }: ModelInput,
   userMessage?: string
 ): Promise<OpenAIResponse> {
   logger.trace("Building image input for the model...");
@@ -112,6 +109,13 @@ export async function sendInputToModel(
     input.push({
       role: "user",
       content: userMessage,
+    });
+  }
+
+  if (domContent) {
+    input.push({
+      type: "text",
+      text: domContent,
     });
   }
 

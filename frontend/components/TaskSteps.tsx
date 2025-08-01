@@ -171,6 +171,24 @@ export default function TestScriptStepsTableWidget() {
           );
         },
       },
+      {
+        accessorKey: "testResults",
+        header: "Test Results",
+        meta: { style: { width: "30%" } },
+        cell: ({ row }) => {
+          const testResults = row.original.testResults;
+          return <span className="text-sm text-gray-500">{testResults}</span>;
+        },
+      },
+      {
+        accessorKey: "domContent",
+        header: "DOM Content",
+        meta: { style: { width: "50%" } },
+        cell: ({ row }) => {
+          const domContent = row.original.domContent;
+          return <span className="text-sm text-gray-500">{domContent}</span>;
+        },
+      },
     ],
     [stepTimestamps, timerStart]
   );

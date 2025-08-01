@@ -114,7 +114,7 @@ export async function computerUseLoop(
       // Get reason from the response.
       const reasoningOutputs = response.output.filter(
         (item: any) => item.type === "reasoning"
-      );
+        );
       if (reasoningOutputs.length > 0) {
         reasoningOutputs.forEach((reason: any) => {
           const summaryText = Array.isArray(reason.summary)
@@ -245,11 +245,15 @@ export async function computerUseLoop(
       screenshotBuffer = await getScreenshotWithRetry(page);
       screenshotBase64 = screenshotBuffer.toString("base64");
 
+      // Extract the entire DOM content.
+      const domContent = await page.evaluate(() => document.documentElement.outerHTML);
+
       // Send the screenshot back as a computer_call_output.
       response = (await sendInputToModel({
         screenshotBase64,
         previousResponseId: response.id,
         lastCallId,
+        domContent
       })) as any;
     }
   }

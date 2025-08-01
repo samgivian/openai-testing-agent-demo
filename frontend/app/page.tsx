@@ -4,8 +4,9 @@ import { useState } from "react";
 import ConfigPanel from "@/components/ConfigPanel";
 import SidePanel from "@/components/SidePanel";
 import TaskSteps from "@/components/TaskSteps";
-
+import { SocketIOManager } from "@/components/SocketIOManager";
 export default function Main() {
+  <SocketIOManager />;
   const [isSideOpen, setIsSideOpen] = useState(false);
 
   /* show TaskSteps only after the configuration is submitted */

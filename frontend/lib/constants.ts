@@ -1,11 +1,52 @@
-export const TEST_CASE = `Your task is to purchase 2 clothing items: a green shirt and a striped black & white polo, under $50.
-Navigate to clothes, filter on Men and set the max price to $50.
-Add to the cart the first green shirt that you see, and the first striped black & white polo. 
-You can add these items to the cart by clicking the cart icon on the item cards.
-As long as you haven't found these items, continue to the next page if there is one (you can see page navigation at the bottom of the page).
-Once you have added these items to the cart, go to the cart (click on the cart icon on the right of the top navbar, scroll up if you don't see it), enter shipping details with the user info and checkout.`;
+export const TEST_CASE = `Your task is to verify the key informational elements on the Wells Fargo Routing Numbers and Account Numbers help page.
 
-export const TEST_APP_URL = "http://localhost:3005";
+Navigate to the page: https://www.wellsfargo.com/help/routing-number/.
+
+Confirm that the page loads with the heading:
+"Routing Numbers and Account Numbers".
+
+Verify the presence of the question text:
+"Are you looking for a routing number or an account number?"
+
+Confirm that there are two radio buttons labeled:
+
+"Routing number"
+
+"Account number"
+These should be located directly under the question text.
+
+Confirm that the page includes a disclaimer at the bottom:
+"Deposit products offered by Wells Fargo Bank, N.A. Member FDIC."
+
+In the right-hand Resources section, verify that the following links are listed:
+
+Sign Up for Direct Deposit
+
+Send Money with Wells Fargo Online® Wires
+
+View All Wells Fargo Online FAQs
+
+Mailing Addresses
+
+Get the Wells Fargo Mobile® app
+
+Ensure that the footer contains standard Wells Fargo links, including:
+
+Privacy, Cookies, Security & Legal
+
+Do Not Sell or Share My Personal Information
+
+Sitemap
+
+About Wells Fargo
+
+Careers
+
+Home
+
+Also, extract the DOM content of the footer section and include it in the response.`;
+
+export const TEST_APP_URL = "https://www.wellsfargo.com/help/routing-number/";
 export const USERNAME = "test_user_name";
 export const PASSWORD = "test_password";
 

@@ -8,6 +8,8 @@ export type Step = {
   status: string;
   step_reasoning?: string;
   image_path?: string;
+  testResults?: string;
+  domContent?: string;
 };
 
 

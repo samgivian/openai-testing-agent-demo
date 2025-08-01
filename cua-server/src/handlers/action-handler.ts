@@ -152,6 +152,18 @@ export async function handleModelAction(page: Page, action: any): Promise<void> 
   }
 }
 
+async function extractFooterContent(page: Page): Promise<string> {
+  try {
+    const footerContent = await page.evaluate(() => {
+      const footer = document.querySelector('footer');
+      return footer ? footer.innerHTML : null;
+    });
+    return footerContent || "Could not extract footer content";
+  } catch (error) {
+    logger.error(`Error extracting footer content: ${error}`);
+    return "Error extracting footer content";
+  }
+}
 
 export default async function waitForNetworkIdle(page: Page) {
   // Await till network is idle.
