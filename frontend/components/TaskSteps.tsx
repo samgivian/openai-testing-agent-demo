@@ -61,9 +61,10 @@ export default function TestScriptStepsTableWidget() {
       testCases.forEach((step) => {
         const done = step.status === "Pass" || step.status === "Fail";
         if (done && next[step.step_number] === undefined) {
+          const { step_number } = step;
           const lastDone = Object.keys(next)
             .map(Number)
-            .filter((k) => k < step.step_number)
+            .filter((k) => { return k < step_number })
             .sort((a, b) => a - b)
             .pop();
           const lastTs = lastDone !== undefined ? next[lastDone] : timerStart;
@@ -176,8 +177,7 @@ export default function TestScriptStepsTableWidget() {
         header: "Test Results",
         meta: { style: { width: "30%" } },
         cell: ({ row }) => {
-          const testResults = row.original.testResults;
-          return <span className="text-sm text-gray-500">{testResults}</span>;
+          return <span className="text-sm text-gray-500"></span>;
         },
       },
       {

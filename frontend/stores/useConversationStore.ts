@@ -12,8 +12,6 @@ export type Step = {
   domContent?: string;
 };
 
-
-
 interface ConversationState {
   /* Chat  */
   chatMessages: MessageItem[];
