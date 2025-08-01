@@ -54,6 +54,26 @@ export async function computerUseLoop(
               status: "done",
             }
           );
+
+          const finalScreenshot = await page.screenshot();
+          const finalScreenshotBase64 = finalScreenshot.toString("base64");
+          const finalDom = await page.evaluate(
+            () => document.documentElement.outerHTML
+          );
+
+          try {
+            const reviewResp = await testCaseReviewAgent.checkTestScriptStatus(
+              finalScreenshotBase64,
+              finalDom
+            );
+            socket.emit("testscriptupdate", reviewResp);
+          } catch (err) {
+            logger.error(
+              "Error sending final DOM to TestScriptReviewAgent:",
+              err
+            );
+          }
+
           socket.emit("message", "\u2705 Test case finished.");
           socket.data.testCaseStatus = "pass";
           await page.context().browser()?.close();

@@ -186,11 +186,17 @@ export default function TestScriptStepsTableWidget() {
         meta: { style: { width: "50%" } },
         cell: ({ row }) => {
           const domContent = row.original.domContent;
-          return <span className="text-sm text-gray-500">{domContent}</span>;
+          return domContent ? (
+            <pre className="text-xs whitespace-pre-wrap max-h-40 overflow-auto">
+              {domContent}
+            </pre>
+          ) : (
+            <span className="text-gray-400">No DOM</span>
+          );
         },
       },
     ],
-    [stepTimestamps, timerStart]
+    [stepTimestamps, timerStart, getStepDuration]
   );
 
   const table = useReactTable({
