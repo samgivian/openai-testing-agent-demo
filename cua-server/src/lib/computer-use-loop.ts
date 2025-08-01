@@ -57,9 +57,7 @@ export async function computerUseLoop(
 
           const finalScreenshot = await page.screenshot();
           const finalScreenshotBase64 = finalScreenshot.toString("base64");
-          const finalDom = await page.evaluate(
-            () => document.documentElement.outerHTML
-          );
+          const finalDom = await page.content();
 
           try {
             const reviewResp = await testCaseReviewAgent.checkTestScriptStatus(
@@ -175,9 +173,7 @@ export async function computerUseLoop(
       if (["click"].includes(action?.type)) {
         const screenshotBuffer = await page.screenshot();
         const screenshotBase64 = screenshotBuffer.toString("base64");
-        const domContent = await page.evaluate(
-          () => document.documentElement.outerHTML
-        );
+        const domContent = await page.content();
 
         const testScriptReviewResponsePromise =
           testCaseReviewAgent.checkTestScriptStatus(
@@ -272,7 +268,7 @@ export async function computerUseLoop(
       screenshotBase64 = screenshotBuffer.toString("base64");
 
       // Extract the entire DOM content.
-      const domContent = await page.evaluate(() => document.documentElement.outerHTML);
+      const domContent = await page.content();
 
       // Send the screenshot back as a computer_call_output.
       response = (await sendInputToModel({
