@@ -155,9 +155,15 @@ export async function computerUseLoop(
       if (["click"].includes(action?.type)) {
         const screenshotBuffer = await page.screenshot();
         const screenshotBase64 = screenshotBuffer.toString("base64");
+        const domContent = await page.evaluate(
+          () => document.documentElement.outerHTML
+        );
 
         const testScriptReviewResponsePromise =
-          testCaseReviewAgent.checkTestScriptStatus(screenshotBase64);
+          testCaseReviewAgent.checkTestScriptStatus(
+            screenshotBase64,
+            domContent
+          );
         // Asynchronously emit the test script review response to the socket.
         testScriptReviewResponsePromise
           .then((testScriptReviewResponse) => {
