@@ -12,6 +12,7 @@ type Item =
       text: string;
       color?: string;
       fontFamily?: string;
+      fontWeight?: string;
       fontSize?: string;
     }
   | { kind: "scroll"; amount: number };
@@ -29,6 +30,7 @@ export default function TestBuilder() {
     text: "",
     color: "",
     fontFamily: "",
+    fontWeight: "",
     fontSize: "",
   });
   const [specText, setSpecText] = useState("");
@@ -57,7 +59,13 @@ export default function TestBuilder() {
 
   const addItem = (type: ElementTag) => {
     setNewElementTag(type);
-    setFormData({ text: "", color: "", fontFamily: "", fontSize: "" });
+    setFormData({
+      text: "",
+      color: "",
+      fontFamily: "",
+      fontWeight: "",
+      fontSize: "",
+    });
   };
 
   const submitItem = () => {
@@ -70,6 +78,7 @@ export default function TestBuilder() {
         text: formData.text.trim(),
         color: formData.color.trim() || undefined,
         fontFamily: formData.fontFamily.trim() || undefined,
+        fontWeight: formData.fontWeight.trim() || undefined,
         fontSize: formData.fontSize.trim() || undefined,
       },
     ]);
@@ -118,7 +127,7 @@ export default function TestBuilder() {
             .replace(/"/g, '\\"')}")`;
           const varName = `locator${idx}`;
           lines.push(
-            `  const ${varName} = page.locator('${selector}', { strict: false });`
+            `  const ${varName} = page.locator('${selector}').first();`
           );
           lines.push(`  await expect(${varName}).toBeVisible();`);
           if (item.color) {
@@ -130,6 +139,11 @@ export default function TestBuilder() {
           if (item.fontFamily) {
             lines.push(
               `  await expect(${varName}).toHaveCSS('font-family', '${item.fontFamily}');`
+            );
+          }
+          if (item.fontWeight) {
+            lines.push(
+              `  await expect(${varName}).toHaveCSS('font-weight', '${item.fontWeight}');`
             );
           }
           if (item.fontSize) {
@@ -260,6 +274,7 @@ export default function TestBuilder() {
                 style={{
                   color: item.color,
                   fontFamily: item.fontFamily,
+                  fontWeight: item.fontWeight,
                   fontSize: item.fontSize,
                 }}
               >
@@ -330,6 +345,14 @@ export default function TestBuilder() {
               value={formData.fontFamily}
               onChange={(e) =>
                 setFormData({ ...formData, fontFamily: e.target.value })
+              }
+            />
+            <input
+              className="w-full border px-2 py-1"
+              placeholder="Font weight (optional)"
+              value={formData.fontWeight}
+              onChange={(e) =>
+                setFormData({ ...formData, fontWeight: e.target.value })
               }
             />
             <input
