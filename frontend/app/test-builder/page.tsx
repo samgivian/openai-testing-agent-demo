@@ -14,6 +14,7 @@ type Item =
       fontFamily?: string;
       fontWeight?: string;
       fontSize?: string;
+      strict?: boolean;
     }
   | { kind: "scroll"; amount: number };
 
@@ -32,6 +33,7 @@ export default function TestBuilder() {
     fontFamily: "",
     fontWeight: "",
     fontSize: "",
+    strict: false,
   });
   const [specText, setSpecText] = useState("");
   const [specEdited, setSpecEdited] = useState(false);
@@ -65,6 +67,7 @@ export default function TestBuilder() {
       fontFamily: "",
       fontWeight: "",
       fontSize: "",
+      strict: false,
     });
   };
 
@@ -80,6 +83,7 @@ export default function TestBuilder() {
         fontFamily: formData.fontFamily.trim() || undefined,
         fontWeight: formData.fontWeight.trim() || undefined,
         fontSize: formData.fontSize.trim() || undefined,
+        strict: formData.strict,
       },
     ]);
     setNewElementTag(null);
@@ -126,9 +130,13 @@ export default function TestBuilder() {
             .replace(/\\/g, "\\\\")
             .replace(/"/g, '\\"')}")`;
           const varName = `locator${idx}`;
-          lines.push(
-            `  const ${varName} = page.locator('${selector}').first();`
-          );
+          if (item.strict) {
+            lines.push(`  const ${varName} = page.locator('${selector}');`);
+          } else {
+            lines.push(
+              `  const ${varName} = page.locator('${selector}').nth(0);`
+            );
+          }
           lines.push(`  await expect(${varName}).toBeVisible();`);
           if (item.color) {
             const color = normalizeColor(item.color);
@@ -363,6 +371,16 @@ export default function TestBuilder() {
                 setFormData({ ...formData, fontSize: e.target.value })
               }
             />
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={formData.strict}
+                onChange={(e) =>
+                  setFormData({ ...formData, strict: e.target.checked })
+                }
+              />
+              <span className="text-sm">Use strict locator</span>
+            </label>
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 type="button"
