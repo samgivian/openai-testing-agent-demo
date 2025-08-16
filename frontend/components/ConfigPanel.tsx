@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { emitTestCaseInitiated } from "@/components/SocketIOManager";
 import AppHeader from "@/components/AppHeader";
 import { TEST_APP_URL, TEST_CASE } from "@/lib/constants";
+import TestItemDialog from "@/components/TestItemDialog";
+import { TestItem } from "@/types/testItem";
 
 interface ConfigPanelProps {
   onSubmitted?: (testCase: string) => void;
@@ -29,6 +31,12 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
   const [url, setUrl] = useState(TEST_APP_URL);
   const [submitting, setSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [testItems, setTestItems] = useState<TestItem[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
+
+  const handleAddItem = (item: TestItem) => {
+    setTestItems((prev) => [...prev, item]);
+  };
 
   // Submit handler
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,10 +46,11 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
     setSubmitting(true);
     setFormSubmitted(true);
 
-    emitTestCaseInitiated({
-      testCase,
-      url,
-    });
+      emitTestCaseInitiated({
+        testCase,
+        url,
+        testItems,
+      });
 
     onSubmitted?.(testCase);
   };
@@ -72,6 +81,11 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
   /* Form view (pre-submit) */
   return (
     <div className="w-full flex justify-center items-start p-4 md:p-6 max-w-4xl mx-auto">
+      <TestItemDialog
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+        onAdd={handleAddItem}
+      />
       <div className="w-full">
         <AppHeader />
 
@@ -112,6 +126,27 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
                   onChange={(e) => setTestCase(e.target.value)}
                   disabled={submitting}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowDialog(true)}
+                  disabled={submitting}
+                >
+                  Add Test Item
+                </Button>
+                {testItems.length > 0 && (
+                  <ul className="list-disc list-inside text-sm">
+                    {testItems.map((item, idx) => (
+                      <li key={idx}>
+                        {item.url}
+                        {item.text ? ` - ${item.text}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
