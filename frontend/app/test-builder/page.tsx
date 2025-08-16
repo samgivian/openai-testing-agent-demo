@@ -6,7 +6,14 @@ const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "button"] as con
 type ElementTag = (typeof ELEMENTS)[number];
 
 type Item =
-  | { kind: "element"; type: ElementTag; text: string }
+  | {
+      kind: "element";
+      type: ElementTag;
+      text: string;
+      color?: string;
+      fontFamily?: string;
+      fontSize?: string;
+    }
   | { kind: "scroll"; amount: number };
 
 type TestCase = { name: string; items: Item[] };
@@ -17,6 +24,13 @@ export default function TestBuilder() {
   ]);
   const [currentTest, setCurrentTest] = useState(0);
   const [route, setRoute] = useState("http://localhost:3000/test-builder");
+  const [newElementTag, setNewElementTag] = useState<ElementTag | null>(null);
+  const [formData, setFormData] = useState({
+    text: "",
+    color: "",
+    fontFamily: "",
+    fontSize: "",
+  });
 
   const escape = (str: string) =>
     str.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
@@ -28,13 +42,24 @@ export default function TestBuilder() {
   };
 
   const addItem = (type: ElementTag) => {
-    const text = prompt(`Enter text for ${type.toUpperCase()}`);
-    if (text && text.trim()) {
-      updateCurrentTest([
-        ...tests[currentTest].items,
-        { kind: "element", type, text: text.trim() },
-      ]);
-    }
+    setNewElementTag(type);
+    setFormData({ text: "", color: "", fontFamily: "", fontSize: "" });
+  };
+
+  const submitItem = () => {
+    if (!newElementTag || !formData.text.trim()) return;
+    updateCurrentTest([
+      ...tests[currentTest].items,
+      {
+        kind: "element",
+        type: newElementTag,
+        text: formData.text.trim(),
+        color: formData.color.trim() || undefined,
+        fontFamily: formData.fontFamily.trim() || undefined,
+        fontSize: formData.fontSize.trim() || undefined,
+      },
+    ]);
+    setNewElementTag(null);
   };
 
   const addScroll = () => {
@@ -78,8 +103,24 @@ export default function TestBuilder() {
             .replace(/\\/g, "\\\\")
             .replace(/"/g, '\\"')}")`;
           lines.push(
-            `  await expect(page.locator('${selector}', { strict: false })).toBeVisible();`
+            `  const locator = page.locator('${selector}', { strict: false });`
           );
+          lines.push("  await expect(locator).toBeVisible();");
+          if (item.color) {
+            lines.push(
+              `  await expect(locator).toHaveCSS('color', '${item.color}');`
+            );
+          }
+          if (item.fontFamily) {
+            lines.push(
+              `  await expect(locator).toHaveCSS('font-family', '${item.fontFamily}');`
+            );
+          }
+          if (item.fontSize) {
+            lines.push(
+              `  await expect(locator).toHaveCSS('font-size', '${item.fontSize}');`
+            );
+          }
         } else if (item.kind === "scroll") {
           lines.push(`  await page.mouse.wheel(0, ${item.amount});`);
         }
@@ -186,7 +227,15 @@ export default function TestBuilder() {
           if (item.kind === "element") {
             const Tag = item.type as keyof JSX.IntrinsicElements;
             return (
-              <Tag key={idx} className="mb-2">
+              <Tag
+                key={idx}
+                className="mb-2"
+                style={{
+                  color: item.color,
+                  fontFamily: item.fontFamily,
+                  fontSize: item.fontSize,
+                }}
+              >
                 {item.text}
               </Tag>
             );
@@ -206,6 +255,68 @@ export default function TestBuilder() {
           </div>
         )}
       </main>
+      {newElementTag && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitItem();
+            }}
+            className="bg-white p-4 rounded shadow w-80 space-y-2"
+          >
+            <h3 className="font-semibold">
+              Add {newElementTag.toUpperCase()}
+            </h3>
+            <input
+              className="w-full border px-2 py-1"
+              placeholder="Text"
+              value={formData.text}
+              onChange={(e) =>
+                setFormData({ ...formData, text: e.target.value })
+              }
+            />
+            <input
+              className="w-full border px-2 py-1"
+              placeholder="Color (optional)"
+              value={formData.color}
+              onChange={(e) =>
+                setFormData({ ...formData, color: e.target.value })
+              }
+            />
+            <input
+              className="w-full border px-2 py-1"
+              placeholder="Font family (optional)"
+              value={formData.fontFamily}
+              onChange={(e) =>
+                setFormData({ ...formData, fontFamily: e.target.value })
+              }
+            />
+            <input
+              className="w-full border px-2 py-1"
+              placeholder="Font size (optional)"
+              value={formData.fontSize}
+              onChange={(e) =>
+                setFormData({ ...formData, fontSize: e.target.value })
+              }
+            />
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setNewElementTag(null)}
+                className="px-2 py-1 text-sm bg-gray-200 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
