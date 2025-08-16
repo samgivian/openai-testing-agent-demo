@@ -30,13 +30,7 @@ import { Switch } from "@/components/ui/switch";
 
 import { emitTestCaseInitiated } from "@/components/SocketIOManager";
 import AppHeader from "@/components/AppHeader";
-import {
-  PASSWORD,
-  TEST_APP_URL,
-  TEST_CASE,
-  USER_INFO,
-  USERNAME,
-} from "@/lib/constants";
+import { TEST_APP_URL, TEST_CASE } from "@/lib/constants";
 
 interface ConfigPanelProps {
   onSubmitted?: (testCase: string) => void;
@@ -45,11 +39,11 @@ interface ConfigPanelProps {
 export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
   const [testCase, setTestCase] = useState(TEST_CASE);
   const [url, setUrl] = useState(TEST_APP_URL);
-  const [username, setUsername] = useState(USERNAME);
-  const [password, setPassword] = useState(PASSWORD);
-  const [name, setName] = useState(USER_INFO.name);
-  const [email, setEmail] = useState(USER_INFO.email);
-  const [address, setAddress] = useState(USER_INFO.address);
+  const [username, setUsername] = useState("test_user_name");
+  const [password, setPassword] = useState("test_password");
+  const [name, setName] = useState("Cua Blossom");
+  const [email, setEmail] = useState("cua@example.com");
+  const [address, setAddress] = useState("123 Main St, Anytown, USA");
   const [requiresLogin, setRequiresLogin] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
