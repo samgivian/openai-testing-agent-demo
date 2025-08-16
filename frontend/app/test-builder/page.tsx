@@ -35,6 +35,18 @@ export default function TestBuilder() {
   const escape = (str: string) =>
     str.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
+  const normalizeColor = (color: string) => {
+    const el = document.createElement("div");
+    el.style.color = color;
+    document.body.appendChild(el);
+    const computed = getComputedStyle(el).color;
+    document.body.removeChild(el);
+    return computed.replace(
+      /rgba\((\d+), (\d+), (\d+), [^\)]+\)/,
+      "rgb($1, $2, $3)"
+    );
+  };
+
   const updateCurrentTest = (items: Item[]) => {
     const updated = [...tests];
     updated[currentTest] = { ...updated[currentTest], items };
@@ -97,28 +109,30 @@ export default function TestBuilder() {
     tests.forEach((t) => {
       lines.push(`test('${escape(t.name)}', async ({ page }) => {`);
       lines.push(`  await page.goto('${escape(route)}');`);
-      t.items.forEach((item) => {
+      t.items.forEach((item, idx) => {
         if (item.kind === "element") {
           const selector = `${item.type}:has-text("${item.text
             .replace(/\\/g, "\\\\")
             .replace(/"/g, '\\"')}")`;
+          const varName = `locator${idx}`;
           lines.push(
-            `  const locator = page.locator('${selector}', { strict: false });`
+            `  const ${varName} = page.locator('${selector}', { strict: false });`
           );
-          lines.push("  await expect(locator).toBeVisible();");
+          lines.push(`  await expect(${varName}).toBeVisible();`);
           if (item.color) {
+            const color = normalizeColor(item.color);
             lines.push(
-              `  await expect(locator).toHaveCSS('color', '${item.color}');`
+              `  await expect(${varName}).toHaveCSS('color', '${color}');`
             );
           }
           if (item.fontFamily) {
             lines.push(
-              `  await expect(locator).toHaveCSS('font-family', '${item.fontFamily}');`
+              `  await expect(${varName}).toHaveCSS('font-family', '${item.fontFamily}');`
             );
           }
           if (item.fontSize) {
             lines.push(
-              `  await expect(locator).toHaveCSS('font-size', '${item.fontSize}');`
+              `  await expect(${varName}).toHaveCSS('font-size', '${item.fontSize}');`
             );
           }
         } else if (item.kind === "scroll") {
