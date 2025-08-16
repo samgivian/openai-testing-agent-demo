@@ -1,7 +1,6 @@
-// src/components/ConfigPanel.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState, FormEvent } from "react";
 import { ExternalLink, Send } from "lucide-react";
 import {
   Card,
@@ -31,7 +30,7 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // Submit handler
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (submitting) return;
 
