@@ -134,7 +134,7 @@ export async function sendFunctionCallOutput(
   return callCUAModel(input, previousResponseId);
 }
 
-export async function setupCUAModel(systemPrompt: string, userInfo: string) {
+export async function setupCUAModel(systemPrompt: string) {
   logger.trace("Setting up CUA model...");
   const input: any[] = [];
 
@@ -155,7 +155,7 @@ export async function setupCUAModel(systemPrompt: string, userInfo: string) {
 
   input.push({
     role: "user",
-    content: `INSTRUCTIONS:\n${systemPrompt}\n\nUSER INFO:\n${userInfo}`,
+    content: `INSTRUCTIONS:\n${systemPrompt}`,
   });
 
   return callCUAModel(input);

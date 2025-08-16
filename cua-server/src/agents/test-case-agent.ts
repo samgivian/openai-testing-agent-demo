@@ -1,4 +1,4 @@
-import { PROMPT_WITHOUT_LOGIN, PROMPT_WITH_LOGIN } from "../lib/constants";
+import { TEST_CASE_PROMPT } from "../lib/constants";
 import logger from "../utils/logger";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -20,14 +20,9 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 class TestCaseAgent {
   private readonly model = "o3-mini";
-  private readonly developer_prompt: string;
-  private readonly login_required: boolean;
+  private readonly developer_prompt: string = TEST_CASE_PROMPT;
 
-  constructor(login_required = false) {
-    this.login_required = login_required;
-    this.developer_prompt = login_required
-      ? PROMPT_WITH_LOGIN
-      : PROMPT_WITHOUT_LOGIN;
+  constructor() {
     logger.trace(`Developer prompt: ${this.developer_prompt}`);
   }
 

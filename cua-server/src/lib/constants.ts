@@ -1,27 +1,4 @@
-export const PROMPT_WITH_LOGIN = `
-   You are a test case authoring agent. You will be given instructions by user on what they want to test.
-   Create test steps Step 1, Step 2, … Return in JSON format { step_number: step_instructions: status: }
-   Provide all the steps in your response.
-
-   The first step is always:
-   1. Open the browser and navigate to the login URL.
-
-   Then add the actual test steps the user asked for.
-
-   SAMPLE RESPONSE:
-   {
-     "steps": [
-       { "step_number": 1, "step_instructions": "Open a web browser and navigate to the login URL: <login URL>",            "status": "pending" },
-       { "step_number": 2, "step_instructions": "From the home page, click the 'Accounts' tab.",                           "status": "pending" },
-       { "step_number": 3, "step_instructions": "Click 'New' to create a new account.",                                    "status": "pending" },
-       { "step_number": 4, "step_instructions": "Fill the form with mock data (e.g., Account Name 'Test Account').",       "status": "pending" },
-       { "step_number": 5, "step_instructions": "Click 'Save' and confirm the account appears in the list.",               "status": "pending" },
-       { "step_number": 6, "step_instructions": "Take a screenshot to confirm the account was created.",                   "status": "pending" }
-     ]
-   }
-   `;
-
-export const PROMPT_WITHOUT_LOGIN = `
+export const TEST_CASE_PROMPT = `
    You are a test case authoring agent. You will be given instructions by user on what they want to test.
    Create test steps Step 1, Step 2, … Return in JSON format { step_number: step_instructions: status: }
    Provide all the steps in your response.

@@ -11,17 +11,10 @@ export async function handleTestCaseInitiated(
 ): Promise<void> {
   logger.debug(`Received testCaseInitiated with data: ${JSON.stringify(data)}`);
   try {
-    const { testCase, url, userName, password, userInfo } = data as {
+    const { testCase, url } = data as {
       testCase: string;
       url: string;
-      userName: string;
-      password: string;
-      userInfo: string;
-      loginRequired?: boolean;
     };
-    const loginRequired = data.loginRequired ?? false;
-
-    logger.debug(`Login required: ${loginRequired}`);
 
     socket.emit(
       "message",
@@ -29,11 +22,9 @@ export async function handleTestCaseInitiated(
     );
 
     // Create system prompt by combining form inputs.
-    const msg = loginRequired
-      ? `${testCase} URL: ${url} User Name: ${userName} Password: *********\n USER INFO:\n${userInfo}`
-      : `${testCase} URL: ${url}\n USER INFO:\n${userInfo}`;
+    const msg = `${testCase} URL: ${url}`;
 
-    const testCaseAgent = new TestCaseAgent(loginRequired);
+    const testCaseAgent = new TestCaseAgent();
 
     const testCaseResponse = await testCaseAgent.invokeResponseAPI(msg);
     const testCaseJson = JSON.stringify(testCaseResponse);
@@ -72,16 +63,7 @@ export async function handleTestCaseInitiated(
 
     // Start the test execution using the provided URL.
     // Pass the test case review agent to the cuaLoopHandler.
-    await cuaLoopHandler(
-      testScript,
-      url,
-      socket,
-      testCaseReviewAgent,
-      userName,
-      password,
-      loginRequired,
-      userInfo
-    );
+    await cuaLoopHandler(testScript, url, socket, testCaseReviewAgent);
   } catch (error) {
     logger.error(`Error in handleTestCaseInitiated: ${error}`);
     socket.emit("message", "Error initiating test case.");

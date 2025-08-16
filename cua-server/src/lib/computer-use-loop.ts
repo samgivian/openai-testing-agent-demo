@@ -6,7 +6,6 @@ import {
 } from "../services/openai-cua-client";
 import { handleModelAction } from "../handlers/action-handler";
 import logger from "../utils/logger";
-import { scrollPageAndCapture, validateHeadings } from "../utils/pageUtils";
 import { Socket } from "socket.io";
 import TestScriptReviewAgent from "../agents/test-script-review-agent";
 
@@ -22,8 +21,6 @@ export async function computerUseLoop(
   switchedToNewTab: boolean = false // <-- Flag to ensure recursion happens only once for a new tab.
 ) {
   await page.screenshot({ path: "screenshot.png" });
-  await scrollPageAndCapture(page, socket);
-  await validateHeadings(page, socket);
   while (true) {
     // Check if the test case status is 'fail'.
     if (socket.data.testCaseStatus === "fail") {
