@@ -1,4 +1,5 @@
 import { Page } from "playwright";
+import { Socket } from "socket.io";
 import logger from "./logger";
 
 /**
@@ -6,7 +7,10 @@ import logger from "./logger";
  * after each scroll. Screenshots are saved as `scroll-<index>.png` in the
  * working directory.
  */
-export async function scrollPageAndCapture(page: Page): Promise<void> {
+export async function scrollPageAndCapture(
+  page: Page,
+  socket?: Socket
+): Promise<void> {
   const height = page.viewportSize()?.height ?? 768;
   let scrolled = 0;
   let index = 0;
@@ -20,13 +24,17 @@ export async function scrollPageAndCapture(page: Page): Promise<void> {
     const path = `scroll-${index}.png`;
     await page.screenshot({ path });
     logger.debug(`Captured screenshot: ${path}`);
+    socket?.emit("message", `Captured screenshot: ${path}`);
   }
 }
 
 /**
  * Checks for the presence of heading elements on the page.
  */
-export async function validateHeadings(page: Page): Promise<{ h1: boolean; h2: boolean; h3: boolean }> {
+export async function validateHeadings(
+  page: Page,
+  socket?: Socket
+): Promise<{ h1: boolean; h2: boolean; h3: boolean }> {
   const [h1, h2, h3] = await Promise.all([
     page.locator("h1").count(),
     page.locator("h2").count(),
@@ -34,5 +42,9 @@ export async function validateHeadings(page: Page): Promise<{ h1: boolean; h2: b
   ]);
   const result = { h1: h1 > 0, h2: h2 > 0, h3: h3 > 0 };
   logger.debug(`Heading validation: ${JSON.stringify(result)}`);
+  socket?.emit(
+    "message",
+    `Heading validation: ${JSON.stringify(result)}`
+  );
   return result;
 }

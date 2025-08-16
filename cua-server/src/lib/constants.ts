@@ -52,12 +52,7 @@ export const TEST_SCRIPT_REVIEW_PROMPT = `
     "steps": [
       {
         "step_number": 1,
-        "step_instructions": "Open a web browser and navigate to the login URL: https://xyz.com/",
-        "status": "pending"
-      },
-      {
-        "step_number": 2,
-        "step_instructions": "Enter the provided username/password on the login page.",
+        "step_instructions": "Open a web browser and navigate to the URL: https://xyz.com/",
         "status": "pending"
       }
     ]

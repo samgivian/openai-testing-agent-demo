@@ -8,6 +8,7 @@ import TestScriptReviewAgent from "../agents/test-script-review-agent";
 import { setupCUAModel } from "../services/openai-cua-client";
 import { LoginService } from "../services/login-service";
 import { ModelInput } from "../services/openai-cua-client";
+import { scrollPageAndCapture, validateHeadings } from "../utils/pageUtils";
 
 // Read viewport dimensions from .env file with defaults if not set
 const displayWidth: number = parseInt(process.env.DISPLAY_WIDTH || "1024", 10);
@@ -74,6 +75,10 @@ export async function cuaLoopHandler(
         )}`
       );
     });
+
+    // Scroll the page and validate headings on initial load
+    await scrollPageAndCapture(page, socket);
+    await validateHeadings(page, socket);
 
     // Await till network is idle.
     await page.waitForTimeout(2000);

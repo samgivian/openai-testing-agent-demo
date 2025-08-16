@@ -19,7 +19,7 @@ export async function handleTestCaseInitiated(
       userInfo: string;
       loginRequired?: boolean;
     };
-    const loginRequired = data.loginRequired ?? true;
+    const loginRequired = data.loginRequired ?? false;
 
     logger.debug(`Login required: ${loginRequired}`);
 
@@ -29,7 +29,9 @@ export async function handleTestCaseInitiated(
     );
 
     // Create system prompt by combining form inputs.
-    const msg = `${testCase} URL: ${url} User Name: ${userName} Password: *********\n USER INFO:\n${userInfo}`;
+    const msg = loginRequired
+      ? `${testCase} URL: ${url} User Name: ${userName} Password: *********\n USER INFO:\n${userInfo}`
+      : `${testCase} URL: ${url}\n USER INFO:\n${userInfo}`;
 
     const testCaseAgent = new TestCaseAgent(loginRequired);
 
