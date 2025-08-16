@@ -15,6 +15,9 @@ type Item =
       fontWeight?: string;
       fontSize?: string;
       strict?: boolean;
+      shouldClick?: boolean;
+      checkNavigation?: boolean;
+      navigationUrl?: string;
     }
   | { kind: "scroll"; amount: number };
 
@@ -34,6 +37,9 @@ export default function TestBuilder() {
     fontWeight: "",
     fontSize: "",
     strict: false,
+    shouldClick: false,
+    checkNavigation: false,
+    navigationUrl: "",
   });
   const [specText, setSpecText] = useState("");
   const [specEdited, setSpecEdited] = useState(false);
@@ -68,6 +74,9 @@ export default function TestBuilder() {
       fontWeight: "",
       fontSize: "",
       strict: false,
+      shouldClick: false,
+      checkNavigation: false,
+      navigationUrl: "",
     });
   };
 
@@ -84,6 +93,13 @@ export default function TestBuilder() {
         fontWeight: formData.fontWeight.trim() || undefined,
         fontSize: formData.fontSize.trim() || undefined,
         strict: formData.strict,
+        shouldClick: formData.shouldClick,
+        checkNavigation:
+          newElementTag === "a" ? formData.checkNavigation : undefined,
+        navigationUrl:
+          newElementTag === "a" && formData.checkNavigation
+            ? formData.navigationUrl.trim() || undefined
+            : undefined,
       },
     ]);
     setNewElementTag(null);
@@ -158,6 +174,14 @@ export default function TestBuilder() {
             lines.push(
               `  await expect(${varName}).toHaveCSS('font-size', '${item.fontSize}');`
             );
+          }
+          if (item.shouldClick || item.checkNavigation) {
+            lines.push(`  await ${varName}.click();`);
+          }
+          if (item.checkNavigation && item.navigationUrl) {
+            const navUrl = escape(item.navigationUrl);
+            lines.push(`  await expect(page).toHaveURL('${navUrl}');`);
+            lines.push(`  await page.goto('${escape(route)}');`);
           }
         } else if (item.kind === "scroll") {
           lines.push(`  await page.mouse.wheel(0, ${item.amount});`);
@@ -371,6 +395,44 @@ export default function TestBuilder() {
                 setFormData({ ...formData, fontSize: e.target.value })
               }
             />
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={formData.shouldClick}
+                onChange={(e) =>
+                  setFormData({ ...formData, shouldClick: e.target.checked })
+                }
+              />
+              <span className="text-sm">Verify click</span>
+            </label>
+            {newElementTag === "a" && (
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={formData.checkNavigation}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      checkNavigation: e.target.checked,
+                    })
+                  }
+                />
+                <span className="text-sm">Check navigation</span>
+              </label>
+            )}
+            {newElementTag === "a" && formData.checkNavigation && (
+              <input
+                className="w-full border px-2 py-1"
+                placeholder="Navigation URL"
+                value={formData.navigationUrl}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    navigationUrl: e.target.value,
+                  })
+                }
+              />
+            )}
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
