@@ -17,6 +17,7 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
     url: "",
     text: "",
     shouldClick: false,
+    checkNavigation: false,
     fontColor: "",
     fontSize: "",
     fontFamily: "",
@@ -46,6 +47,7 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
       url: "",
       text: "",
       shouldClick: false,
+      checkNavigation: false,
       fontColor: "",
       fontSize: "",
       fontFamily: "",
@@ -111,16 +113,18 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
               onChange={(e) => setForm({ ...form, fontType: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="navigationUrl">Navigation URL</Label>
-            <Input
-              id="navigationUrl"
-              value={form.navigationUrl}
-              onChange={(e) =>
-                setForm({ ...form, navigationUrl: e.target.value })
-              }
-            />
-          </div>
+          {form.checkNavigation && (
+            <div className="space-y-2">
+              <Label htmlFor="navigationUrl">Navigation URL</Label>
+              <Input
+                id="navigationUrl"
+                value={form.navigationUrl}
+                onChange={(e) =>
+                  setForm({ ...form, navigationUrl: e.target.value })
+                }
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="eventName">Event Name</Label>
             <Input
@@ -129,16 +133,32 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
               onChange={(e) => setForm({ ...form, eventName: e.target.value })}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              id="shouldClick"
-              type="checkbox"
-              checked={form.shouldClick}
-              onChange={(e) =>
-                setForm({ ...form, shouldClick: e.target.checked })
-              }
-            />
-            <Label htmlFor="shouldClick">Requires click</Label>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                id="shouldClick"
+                type="checkbox"
+                checked={form.shouldClick}
+                onChange={(e) =>
+                  setForm({ ...form, shouldClick: e.target.checked })
+                }
+              />
+              <Label htmlFor="shouldClick">Verify click</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="checkNavigation"
+                type="checkbox"
+                checked={form.checkNavigation}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    checkNavigation: e.target.checked,
+                  })
+                }
+              />
+              <Label htmlFor="checkNavigation">Check navigation</Label>
+            </div>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex justify-end gap-2 pt-2">
