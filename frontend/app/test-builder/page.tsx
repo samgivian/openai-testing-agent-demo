@@ -16,6 +16,7 @@ type Item =
       fontSize?: string;
       strict?: boolean;
       shouldClick?: boolean;
+      href?: string;
       checkNavigation?: boolean;
       navigationUrl?: string;
     }
@@ -38,6 +39,7 @@ export default function TestBuilder() {
     fontSize: "",
     strict: false,
     shouldClick: false,
+    href: "",
     checkNavigation: false,
     navigationUrl: "",
   });
@@ -75,6 +77,7 @@ export default function TestBuilder() {
       fontSize: "",
       strict: false,
       shouldClick: false,
+      href: "",
       checkNavigation: false,
       navigationUrl: "",
     });
@@ -94,10 +97,11 @@ export default function TestBuilder() {
         fontSize: formData.fontSize.trim() || undefined,
         strict: formData.strict,
         shouldClick: formData.shouldClick,
-        checkNavigation:
-          newElementTag === "a" ? formData.checkNavigation : undefined,
+        href:
+          newElementTag === "a" ? formData.href.trim() || undefined : undefined,
+        checkNavigation: formData.shouldClick ? formData.checkNavigation : undefined,
         navigationUrl:
-          newElementTag === "a" && formData.checkNavigation
+          formData.shouldClick && formData.checkNavigation
             ? formData.navigationUrl.trim() || undefined
             : undefined,
       },
@@ -173,6 +177,12 @@ export default function TestBuilder() {
           if (item.fontSize) {
             lines.push(
               `  await expect(${varName}).toHaveCSS('font-size', '${item.fontSize}');`
+            );
+          }
+          if (item.type === "a" && item.href) {
+            const href = escape(item.href);
+            lines.push(
+              `  await expect(${varName}).toHaveAttribute('href', '${href}');`
             );
           }
           if (item.shouldClick || item.checkNavigation) {
@@ -299,6 +309,8 @@ export default function TestBuilder() {
         {tests[currentTest].items.map((item, idx) => {
           if (item.kind === "element") {
             const Tag = item.type as keyof JSX.IntrinsicElements;
+            const anchorProps =
+              item.type === "a" && item.href ? { href: item.href } : {};
             return (
               <Tag
                 key={idx}
@@ -309,6 +321,7 @@ export default function TestBuilder() {
                   fontWeight: item.fontWeight,
                   fontSize: item.fontSize,
                 }}
+                {...anchorProps}
               >
                 {item.text}
               </Tag>
@@ -395,17 +408,33 @@ export default function TestBuilder() {
                 setFormData({ ...formData, fontSize: e.target.value })
               }
             />
+            {newElementTag === "a" && (
+              <input
+                className="w-full border px-2 py-1"
+                placeholder="Link URL (href)"
+                value={formData.href}
+                onChange={(e) =>
+                  setFormData({ ...formData, href: e.target.value })
+                }
+              />
+            )}
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={formData.shouldClick}
                 onChange={(e) =>
-                  setFormData({ ...formData, shouldClick: e.target.checked })
+                  setFormData({
+                    ...formData,
+                    shouldClick: e.target.checked,
+                    checkNavigation: e.target.checked
+                      ? formData.checkNavigation
+                      : false,
+                  })
                 }
               />
               <span className="text-sm">Verify click</span>
             </label>
-            {newElementTag === "a" && (
+            {formData.shouldClick && (
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -420,7 +449,7 @@ export default function TestBuilder() {
                 <span className="text-sm">Check navigation</span>
               </label>
             )}
-            {newElementTag === "a" && formData.checkNavigation && (
+            {formData.shouldClick && formData.checkNavigation && (
               <input
                 className="w-full border px-2 py-1"
                 placeholder="Navigation URL"
