@@ -16,9 +16,13 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
   const [form, setForm] = useState<TestItem>({
     url: "",
     text: "",
-    color: "",
-    size: "",
     shouldClick: false,
+    fontColor: "",
+    fontSize: "",
+    fontFamily: "",
+    fontType: "",
+    navigationUrl: "",
+    eventName: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +42,17 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
       return;
     }
     onAdd(form);
-    setForm({ url: "", text: "", color: "", size: "", shouldClick: false });
+    setForm({
+      url: "",
+      text: "",
+      shouldClick: false,
+      fontColor: "",
+      fontSize: "",
+      fontFamily: "",
+      fontType: "",
+      navigationUrl: "",
+      eventName: "",
+    });
     onClose();
   };
 
@@ -66,19 +80,53 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="color">Color</Label>
+            <Label htmlFor="fontColor">Font Color</Label>
             <Input
-              id="color"
-              value={form.color}
-              onChange={(e) => setForm({ ...form, color: e.target.value })}
+              id="fontColor"
+              value={form.fontColor}
+              onChange={(e) => setForm({ ...form, fontColor: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="size">Size</Label>
+            <Label htmlFor="fontSize">Font Size</Label>
             <Input
-              id="size"
-              value={form.size}
-              onChange={(e) => setForm({ ...form, size: e.target.value })}
+              id="fontSize"
+              value={form.fontSize}
+              onChange={(e) => setForm({ ...form, fontSize: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fontFamily">Font Family</Label>
+            <Input
+              id="fontFamily"
+              value={form.fontFamily}
+              onChange={(e) => setForm({ ...form, fontFamily: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fontType">Font Type</Label>
+            <Input
+              id="fontType"
+              value={form.fontType}
+              onChange={(e) => setForm({ ...form, fontType: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="navigationUrl">Navigation URL</Label>
+            <Input
+              id="navigationUrl"
+              value={form.navigationUrl}
+              onChange={(e) =>
+                setForm({ ...form, navigationUrl: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="eventName">Event Name</Label>
+            <Input
+              id="eventName"
+              value={form.eventName}
+              onChange={(e) => setForm({ ...form, eventName: e.target.value })}
             />
           </div>
           <div className="flex items-center gap-2">
