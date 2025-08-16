@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "button"] as const;
 type ElementTag = (typeof ELEMENTS)[number];
@@ -31,6 +31,8 @@ export default function TestBuilder() {
     fontFamily: "",
     fontSize: "",
   });
+  const [specText, setSpecText] = useState("");
+  const [specEdited, setSpecEdited] = useState(false);
 
   const escape = (str: string) =>
     str.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
@@ -104,7 +106,7 @@ export default function TestBuilder() {
 
   const hasAnyItems = tests.some((t) => t.items.length > 0);
 
-  const generateSpec = () => {
+  const generateSpec = useCallback(() => {
     const lines = ["import { test, expect } from '@playwright/test';", ""];
     tests.forEach((t) => {
       lines.push(`test('${escape(t.name)}', async ({ page }) => {`);
@@ -143,10 +145,21 @@ export default function TestBuilder() {
       lines.push("");
     });
     return lines.join("\n");
+  }, [tests, route]);
+
+  useEffect(() => {
+    if (!specEdited) {
+      setSpecText(generateSpec());
+    }
+  }, [generateSpec, specEdited]);
+
+  const regenerateSpec = () => {
+    setSpecEdited(false);
+    setSpecText(generateSpec());
   };
 
   const downloadSpec = () => {
-    const blob = new Blob([generateSpec()], { type: "text/plain" });
+    const blob = new Blob([specText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -157,7 +170,7 @@ export default function TestBuilder() {
 
   const copySpec = async () => {
     try {
-      await navigator.clipboard.writeText(generateSpec());
+      await navigator.clipboard.writeText(specText);
       alert("Test suite copied to clipboard");
     } catch (err) {
       alert("Copy failed: " + err);
@@ -263,9 +276,23 @@ export default function TestBuilder() {
         {hasAnyItems && (
           <div className="mt-4">
             <h2 className="font-semibold mb-2">Generated Test Suite</h2>
-            <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap">
-              {generateSpec()}
-            </pre>
+            <textarea
+              className="w-full bg-gray-100 p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap font-mono"
+              rows={10}
+              value={specText}
+              onChange={(e) => {
+                setSpecEdited(true);
+                setSpecText(e.target.value);
+              }}
+            />
+            {specEdited && (
+              <button
+                onClick={regenerateSpec}
+                className="mt-2 px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Reset to Generated Code
+              </button>
+            )}
           </div>
         )}
       </main>
