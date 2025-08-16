@@ -4,6 +4,7 @@ import TestCaseAgent from "../agents/test-case-agent";
 import { convertTestCaseToSteps, TestCase } from "../utils/testCaseUtils";
 import { cuaLoopHandler } from "./cua-loop-handler";
 import TestScriptReviewAgent from "../agents/test-script-review-agent";
+import { TestItem } from "../types/test-item";
 
 export async function handleTestCaseInitiated(
   socket: Socket,
@@ -11,15 +12,26 @@ export async function handleTestCaseInitiated(
 ): Promise<void> {
   logger.debug(`Received testCaseInitiated with data: ${JSON.stringify(data)}`);
   try {
-    const { testCase, url, userName, password, userInfo } = data as {
+    const {
+      testCase,
+      url,
+      userName,
+      password,
+      userInfo,
+      testItems,
+    } = data as {
       testCase: string;
       url: string;
       userName: string;
       password: string;
       userInfo: string;
+      testItems?: TestItem[];
       loginRequired?: boolean;
     };
     const loginRequired = data.loginRequired ?? true;
+
+    // Store test items on the socket for later execution
+    socket.data.testItems = testItems || [];
 
     logger.debug(`Login required: ${loginRequired}`);
 

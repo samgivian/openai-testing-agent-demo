@@ -8,10 +8,69 @@ import TestScriptReviewAgent from "../agents/test-script-review-agent";
 import { setupCUAModel } from "../services/openai-cua-client";
 import { LoginService } from "../services/login-service";
 import { ModelInput } from "../services/openai-cua-client";
+import { TestItem } from "../types/test-item";
 
 // Read viewport dimensions from .env file with defaults if not set
 const displayWidth: number = parseInt(process.env.DISPLAY_WIDTH || "1024", 10);
 const displayHeight: number = parseInt(process.env.DISPLAY_HEIGHT || "768", 10);
+
+async function executeTestItems(
+  page: Page,
+  testItems: TestItem[],
+  baseUrl: string,
+  socket: Socket
+) {
+  for (const item of testItems) {
+    try {
+      let locator;
+      if (item.text) {
+        locator = page.getByText(item.text);
+      } else if (item.url) {
+        locator = page.locator(`a[href="${item.url}"]`);
+      } else {
+        continue;
+      }
+
+      if ((await locator.count()) === 0) {
+        socket.emit(
+          "message",
+          `Element not found for ${item.url || item.text}`
+        );
+        continue;
+      }
+
+      if (item.shouldClick) {
+        await locator.first().click();
+        socket.emit("message", `Clicked ${item.text || item.url}`);
+      }
+
+      if (item.checkNavigation && item.navigationUrl) {
+        try {
+          await page.waitForURL(item.navigationUrl, { timeout: 5000 });
+          socket.emit(
+            "message",
+            `Navigated to ${item.navigationUrl}`
+          );
+        } catch {
+          socket.emit(
+            "message",
+            `Navigation to ${item.navigationUrl} failed`
+          );
+        }
+
+        await page.goto(baseUrl);
+      }
+    } catch (err) {
+      socket.emit(
+        "message",
+        `Error executing test item ${item.url}: ${err}`
+      );
+      try {
+        await page.goto(baseUrl);
+      } catch {}
+    }
+  }
+}
 
 export async function cuaLoopHandler(
   systemPrompt: string,
@@ -143,6 +202,13 @@ export async function cuaLoopHandler(
         lastCallId: undefined,
       };
     }
+
+    await executeTestItems(
+      page,
+      socket.data.testItems || [],
+      url,
+      socket
+    );
 
     // Start with an initial call (without a screenshot or call_id)
     const userInfoStr = userInfo ?? "";
