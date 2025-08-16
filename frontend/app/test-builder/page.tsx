@@ -12,7 +12,9 @@ type Item =
       text: string;
       color?: string;
       fontFamily?: string;
+      fontWeight?: string;
       fontSize?: string;
+      strict?: boolean;
     }
   | { kind: "scroll"; amount: number };
 
@@ -29,7 +31,9 @@ export default function TestBuilder() {
     text: "",
     color: "",
     fontFamily: "",
+    fontWeight: "",
     fontSize: "",
+    strict: false,
   });
   const [specText, setSpecText] = useState("");
   const [specEdited, setSpecEdited] = useState(false);
@@ -57,7 +61,14 @@ export default function TestBuilder() {
 
   const addItem = (type: ElementTag) => {
     setNewElementTag(type);
-    setFormData({ text: "", color: "", fontFamily: "", fontSize: "" });
+    setFormData({
+      text: "",
+      color: "",
+      fontFamily: "",
+      fontWeight: "",
+      fontSize: "",
+      strict: false,
+    });
   };
 
   const submitItem = () => {
@@ -70,7 +81,9 @@ export default function TestBuilder() {
         text: formData.text.trim(),
         color: formData.color.trim() || undefined,
         fontFamily: formData.fontFamily.trim() || undefined,
+        fontWeight: formData.fontWeight.trim() || undefined,
         fontSize: formData.fontSize.trim() || undefined,
+        strict: formData.strict,
       },
     ]);
     setNewElementTag(null);
@@ -117,9 +130,13 @@ export default function TestBuilder() {
             .replace(/\\/g, "\\\\")
             .replace(/"/g, '\\"')}")`;
           const varName = `locator${idx}`;
-          lines.push(
-            `  const ${varName} = page.locator('${selector}', { strict: false });`
-          );
+          if (item.strict) {
+            lines.push(`  const ${varName} = page.locator('${selector}');`);
+          } else {
+            lines.push(
+              `  const ${varName} = page.locator('${selector}').nth(0);`
+            );
+          }
           lines.push(`  await expect(${varName}).toBeVisible();`);
           if (item.color) {
             const color = normalizeColor(item.color);
@@ -130,6 +147,11 @@ export default function TestBuilder() {
           if (item.fontFamily) {
             lines.push(
               `  await expect(${varName}).toHaveCSS('font-family', '${item.fontFamily}');`
+            );
+          }
+          if (item.fontWeight) {
+            lines.push(
+              `  await expect(${varName}).toHaveCSS('font-weight', '${item.fontWeight}');`
             );
           }
           if (item.fontSize) {
@@ -260,6 +282,7 @@ export default function TestBuilder() {
                 style={{
                   color: item.color,
                   fontFamily: item.fontFamily,
+                  fontWeight: item.fontWeight,
                   fontSize: item.fontSize,
                 }}
               >
@@ -334,12 +357,30 @@ export default function TestBuilder() {
             />
             <input
               className="w-full border px-2 py-1"
+              placeholder="Font weight (optional)"
+              value={formData.fontWeight}
+              onChange={(e) =>
+                setFormData({ ...formData, fontWeight: e.target.value })
+              }
+            />
+            <input
+              className="w-full border px-2 py-1"
               placeholder="Font size (optional)"
               value={formData.fontSize}
               onChange={(e) =>
                 setFormData({ ...formData, fontSize: e.target.value })
               }
             />
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={formData.strict}
+                onChange={(e) =>
+                  setFormData({ ...formData, strict: e.target.checked })
+                }
+              />
+              <span className="text-sm">Use strict locator</span>
+            </label>
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 type="button"
