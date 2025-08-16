@@ -2,24 +2,38 @@
 
 import { useState } from "react";
 
-const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "button"] as const;
+const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "button"] as const;
 type ElementTag = (typeof ELEMENTS)[number];
 
 type Item =
   | { kind: "element"; type: ElementTag; text: string }
   | { kind: "scroll"; amount: number };
 
+type TestCase = { name: string; items: Item[] };
+
 export default function TestBuilder() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [tests, setTests] = useState<TestCase[]>([
+    { name: "Test 1", items: [] },
+  ]);
+  const [currentTest, setCurrentTest] = useState(0);
   const [route, setRoute] = useState("http://localhost:3000/test-builder");
 
   const escape = (str: string) =>
     str.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
+  const updateCurrentTest = (items: Item[]) => {
+    const updated = [...tests];
+    updated[currentTest] = { ...updated[currentTest], items };
+    setTests(updated);
+  };
+
   const addItem = (type: ElementTag) => {
     const text = prompt(`Enter text for ${type.toUpperCase()}`);
     if (text && text.trim()) {
-      setItems([...items, { kind: "element", type, text: text.trim() }]);
+      updateCurrentTest([
+        ...tests[currentTest].items,
+        { kind: "element", type, text: text.trim() },
+      ]);
     }
   };
 
@@ -27,7 +41,12 @@ export default function TestBuilder() {
     const amt = prompt("Enter scroll amount in pixels");
     if (amt) {
       const value = parseInt(amt, 10);
-      if (!isNaN(value)) setItems([...items, { kind: "scroll", amount: value }]);
+      if (!isNaN(value)) {
+        updateCurrentTest([
+          ...tests[currentTest].items,
+          { kind: "scroll", amount: value },
+        ]);
+      }
     }
   };
 
@@ -36,24 +55,38 @@ export default function TestBuilder() {
     if (url && url.trim()) setRoute(url.trim());
   };
 
-  const clearItems = () => setItems([]);
+  const addTestCase = () => {
+    const name = prompt("Enter test name", `Test ${tests.length + 1}`);
+    if (name && name.trim()) {
+      setTests([...tests, { name: name.trim(), items: [] }]);
+      setCurrentTest(tests.length);
+    }
+  };
+
+  const clearItems = () => updateCurrentTest([]);
+
+  const hasAnyItems = tests.some((t) => t.items.length > 0);
 
   const generateSpec = () => {
-    const lines = [
-      "import { test, expect } from '@playwright/test';",
-      "",
-      "test('generated elements', async ({ page }) => {",
-      `  await page.goto('${escape(route)}');`,
-    ];
-    items.forEach((item) => {
-      if (item.kind === "element") {
-        const selector = `${item.type}:has-text(\\"${item.text.replace(/\\\\/g, "\\\\\\\\").replace(/"/g, '\\"')}\\")`;
-        lines.push(`  await expect(page.locator('${selector}')).toBeVisible();`);
-      } else if (item.kind === "scroll") {
-        lines.push(`  await page.mouse.wheel(0, ${item.amount});`);
-      }
+    const lines = ["import { test, expect } from '@playwright/test';", ""];
+    tests.forEach((t) => {
+      lines.push(`test('${escape(t.name)}', async ({ page }) => {`);
+      lines.push(`  await page.goto('${escape(route)}');`);
+      t.items.forEach((item) => {
+        if (item.kind === "element") {
+          const selector = `${item.type}:has-text("${item.text
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"')}")`;
+          lines.push(
+            `  await expect(page.locator('${selector}', { strict: false })).toBeVisible();`
+          );
+        } else if (item.kind === "scroll") {
+          lines.push(`  await page.mouse.wheel(0, ${item.amount});`);
+        }
+      });
+      lines.push("});");
+      lines.push("");
     });
-    lines.push("});");
     return lines.join("\n");
   };
 
@@ -85,6 +118,25 @@ export default function TestBuilder() {
         >
           Set Route
         </button>
+        {tests.map((t, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentTest(idx)}
+            className={`w-full px-2 py-1 text-sm rounded ${
+              idx === currentTest
+                ? "bg-purple-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            }`}
+          >
+            {t.name}
+          </button>
+        ))}
+        <button
+          onClick={addTestCase}
+          className="w-full px-2 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+        >
+          Add Test Case
+        </button>
         {ELEMENTS.map((el) => (
           <button
             key={el}
@@ -100,31 +152,37 @@ export default function TestBuilder() {
         >
           Scroll
         </button>
-        {items.length > 0 && (
+        {(hasAnyItems || tests[currentTest].items.length > 0) && (
           <div className="pt-2 space-y-2 border-t mt-2">
-            <button
-              onClick={copySpec}
-              className="w-full px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Copy Tests
-            </button>
-            <button
-              onClick={downloadSpec}
-              className="w-full px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Download Tests
-            </button>
-            <button
-              onClick={clearItems}
-              className="w-full px-2 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Clear Tests
-            </button>
+            {hasAnyItems && (
+              <>
+                <button
+                  onClick={copySpec}
+                  className="w-full px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Copy Tests
+                </button>
+                <button
+                  onClick={downloadSpec}
+                  className="w-full px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Download Tests
+                </button>
+              </>
+            )}
+            {tests[currentTest].items.length > 0 && (
+              <button
+                onClick={clearItems}
+                className="w-full px-2 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Clear Current Test
+              </button>
+            )}
           </div>
         )}
       </aside>
       <main className="flex-1 p-4 overflow-auto">
-        {items.map((item, idx) => {
+        {tests[currentTest].items.map((item, idx) => {
           if (item.kind === "element") {
             const Tag = item.type as keyof JSX.IntrinsicElements;
             return (
@@ -139,7 +197,7 @@ export default function TestBuilder() {
             </p>
           );
         })}
-        {items.length > 0 && (
+        {hasAnyItems && (
           <div className="mt-4">
             <h2 className="font-semibold mb-2">Generated Test Suite</h2>
             <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap">
