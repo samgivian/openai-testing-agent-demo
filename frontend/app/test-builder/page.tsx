@@ -247,7 +247,7 @@ export default function TestBuilder() {
 
   return (
     <div className="flex h-full">
-      <aside className="w-48 p-4 border-r space-y-2 bg-white">
+      <aside className="w-48 p-4 border-r space-y-2 bg-secondary">
         <Button onClick={setRouteHandler} className="w-full">
           Set Route
         </Button>
@@ -332,7 +332,7 @@ export default function TestBuilder() {
             );
           }
           return (
-            <p key={idx} className="mb-2 text-gray-500">
+            <p key={idx} className="mb-2 text-muted-foreground">
               Scroll {item.amount}px
             </p>
           );
