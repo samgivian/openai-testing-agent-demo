@@ -1,4 +1,7 @@
+import { config } from "dotenv";
 import pino from "pino";
+
+config({ path: ".env.development" });
 
 const isProduction = process.env.NODE_ENV === "production";
 
