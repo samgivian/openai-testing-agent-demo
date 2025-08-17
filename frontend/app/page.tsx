@@ -4,6 +4,7 @@ import { useState } from "react";
 import ConfigPanel from "@/components/ConfigPanel";
 import SidePanel from "@/components/SidePanel";
 import TaskSteps from "@/components/TaskSteps";
+import GeneratedCode from "@/components/GeneratedCode";
 
 export default function Main() {
   const [isSideOpen, setIsSideOpen] = useState(false);
@@ -44,6 +45,7 @@ export default function Main() {
           <ConfigPanel onSubmitted={() => setConfigSubmitted(true)} />
 
           {/* Show task-steps only after the config has been submitted */}
+          {configSubmitted && <GeneratedCode />}
           {configSubmitted && <TaskSteps />}
         </div>
 
