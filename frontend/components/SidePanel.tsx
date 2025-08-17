@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dot } from "lucide-react";
 import useConversationStore from "@/stores/useConversationStore";
+import useTestCaseStore from "@/stores/useTestCaseStore";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export default function SidePanel() {
   const conversationItems = useConversationStore((s) => s.conversationItems);
+  const addConversationItem = useConversationStore((s) => s.addConversationItem);
+  const setTestCase = useTestCaseStore((s) => s.setTestCase);
+
+  const [scenario, setScenario] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -14,6 +22,35 @@ export default function SidePanel() {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [conversationItems]);
+
+  const handleGenerate = async () => {
+    if (!scenario.trim()) return;
+    setLoading(true);
+    addConversationItem({
+      content: scenario,
+      timestamp: new Date().toLocaleTimeString(),
+    });
+    try {
+      const res = await fetch("http://localhost:4000/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scenario }),
+      });
+      const data = await res.json();
+      setTestCase(data.testCase || "");
+      addConversationItem({
+        content: "Test case generated and inserted",
+        timestamp: new Date().toLocaleTimeString(),
+      });
+    } catch (err) {
+      addConversationItem({
+        content: "Error generating test case",
+        timestamp: new Date().toLocaleTimeString(),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col border-l bg-background">
@@ -39,6 +76,17 @@ export default function SidePanel() {
               </div>
             </div>
           ))}
+        </div>
+        <div className="p-2 border-t space-y-2">
+          <Textarea
+            placeholder="Describe your scenario..."
+            value={scenario}
+            onChange={(e) => setScenario(e.target.value)}
+            className="min-h-[80px]"
+          />
+          <Button onClick={handleGenerate} disabled={loading} className="w-full">
+            {loading ? "Generating..." : "Generate Test"}
+          </Button>
         </div>
       </div>
     </div>

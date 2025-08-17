@@ -18,16 +18,17 @@ import { Button } from "@/components/ui/button";
 
 import { emitTestCaseInitiated } from "@/components/SocketIOManager";
 import AppHeader from "@/components/AppHeader";
-import { TEST_APP_URL, TEST_CASE } from "@/lib/constants";
+import { TEST_APP_URL } from "@/lib/constants";
 import TestItemDialog from "@/components/TestItemDialog";
 import { TestItem } from "@/types/testItem";
+import useTestCaseStore from "@/stores/useTestCaseStore";
 
 interface ConfigPanelProps {
   onSubmitted?: (testCase: string) => void;
 }
 
 export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
-  const [testCase, setTestCase] = useState(TEST_CASE);
+  const { testCase, setTestCase } = useTestCaseStore();
   const [url, setUrl] = useState(TEST_APP_URL);
   const [submitting, setSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);

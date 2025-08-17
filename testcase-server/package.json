@@ -1,0 +1,19 @@
+{
+  "name": "testcase-server",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --env-file=.env.development --respawn --transpile-only src/index.ts"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "openai": "^4.87.3"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "ts-node-dev": "^2.0.0",
+    "@types/node": "^20",
+    "@types/express": "^4.17.17"
+  }
+}
