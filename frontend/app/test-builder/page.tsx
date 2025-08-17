@@ -247,8 +247,8 @@ export default function TestBuilder() {
 
   return (
     <div className="flex h-full">
-      <aside className="w-48 p-4 border-r space-y-2 bg-secondary">
-        <Button onClick={setRouteHandler} className="w-full">
+      <aside className="w-48 p-4 border-r space-y-2 bg-blue-50">
+        <Button onClick={setRouteHandler} className="w-full" variant="builder">
           Set Route
         </Button>
         {tests.map((t, idx) => (
@@ -256,12 +256,12 @@ export default function TestBuilder() {
             key={idx}
             onClick={() => setCurrentTest(idx)}
             className="w-full"
-            variant={idx === currentTest ? "default" : "secondary"}
+            variant={idx === currentTest ? "builder" : "secondary"}
           >
             {t.name}
           </Button>
         ))}
-        <Button onClick={addTestCase} className="w-full">
+        <Button onClick={addTestCase} className="w-full" variant="builder">
           Add Test Case
         </Button>
         {ELEMENTS.map((el) => (
@@ -269,12 +269,12 @@ export default function TestBuilder() {
             key={el}
             onClick={() => addItem(el)}
             className="w-full"
-            variant="secondary"
+            variant="builder"
           >
             {el.toUpperCase()}
           </Button>
         ))}
-        <Button onClick={addScroll} className="w-full" variant="secondary">
+        <Button onClick={addScroll} className="w-full" variant="builder">
           Scroll
         </Button>
         {(hasAnyItems || tests[currentTest].items.length > 0) && (
@@ -284,14 +284,14 @@ export default function TestBuilder() {
                 <Button
                   onClick={copySpec}
                   className="w-full"
-                  variant="secondary"
+                  variant="builder"
                 >
                   Copy Tests
                 </Button>
                 <Button
                   onClick={downloadSpec}
                   className="w-full"
-                  variant="secondary"
+                  variant="builder"
                 >
                   Download Tests
                 </Button>
@@ -352,7 +352,7 @@ export default function TestBuilder() {
             {specEdited && (
               <Button
                 onClick={regenerateSpec}
-                variant="secondary"
+                variant="builder"
                 className="mt-2"
               >
                 Reset to Generated Code
@@ -486,7 +486,7 @@ export default function TestBuilder() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Add</Button>
+                <Button type="submit" variant="builder">Add</Button>
               </CardFooter>
             </form>
           </Card>
