@@ -1,6 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "button"] as const;
 type ElementTag = (typeof ELEMENTS)[number];
@@ -235,72 +247,64 @@ export default function TestBuilder() {
 
   return (
     <div className="flex h-full">
-      <aside className="w-48 p-4 border-r space-y-2 bg-white">
-        <button
-          onClick={setRouteHandler}
-          className="w-full px-2 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
-        >
+      <aside className="w-48 p-4 border-r space-y-2 bg-secondary">
+        <Button onClick={setRouteHandler} className="w-full">
           Set Route
-        </button>
+        </Button>
         {tests.map((t, idx) => (
-          <button
+          <Button
             key={idx}
             onClick={() => setCurrentTest(idx)}
-            className={`w-full px-2 py-1 text-sm rounded ${
-              idx === currentTest
-                ? "bg-purple-500 text-white"
-                : "bg-gray-200 text-gray-800"
-            }`}
+            className="w-full"
+            variant={idx === currentTest ? "default" : "secondary"}
           >
             {t.name}
-          </button>
+          </Button>
         ))}
-        <button
-          onClick={addTestCase}
-          className="w-full px-2 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
-        >
+        <Button onClick={addTestCase} className="w-full">
           Add Test Case
-        </button>
+        </Button>
         {ELEMENTS.map((el) => (
-          <button
+          <Button
             key={el}
             onClick={() => addItem(el)}
-            className="w-full px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="w-full"
+            variant="secondary"
           >
             {el.toUpperCase()}
-          </button>
+          </Button>
         ))}
-        <button
-          onClick={addScroll}
-          className="w-full px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
+        <Button onClick={addScroll} className="w-full" variant="secondary">
           Scroll
-        </button>
+        </Button>
         {(hasAnyItems || tests[currentTest].items.length > 0) && (
           <div className="pt-2 space-y-2 border-t mt-2">
             {hasAnyItems && (
               <>
-                <button
+                <Button
                   onClick={copySpec}
-                  className="w-full px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                  className="w-full"
+                  variant="secondary"
                 >
                   Copy Tests
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={downloadSpec}
-                  className="w-full px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                  className="w-full"
+                  variant="secondary"
                 >
                   Download Tests
-                </button>
+                </Button>
               </>
             )}
             {tests[currentTest].items.length > 0 && (
-              <button
+              <Button
                 onClick={clearItems}
-                className="w-full px-2 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                className="w-full"
+                variant="destructive"
               >
                 Clear Current Test
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -328,7 +332,7 @@ export default function TestBuilder() {
             );
           }
           return (
-            <p key={idx} className="mb-2 text-gray-500">
+            <p key={idx} className="mb-2 text-muted-foreground">
               Scroll {item.amount}px
             </p>
           );
@@ -336,8 +340,8 @@ export default function TestBuilder() {
         {hasAnyItems && (
           <div className="mt-4">
             <h2 className="font-semibold mb-2">Generated Test Suite</h2>
-            <textarea
-              className="w-full bg-gray-100 p-2 rounded text-sm overflow-x-auto whitespace-pre-wrap font-mono"
+            <Textarea
+              className="font-mono"
               rows={10}
               value={specText}
               onChange={(e) => {
@@ -346,148 +350,146 @@ export default function TestBuilder() {
               }}
             />
             {specEdited && (
-              <button
+              <Button
                 onClick={regenerateSpec}
-                className="mt-2 px-2 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                variant="secondary"
+                className="mt-2"
               >
                 Reset to Generated Code
-              </button>
+              </Button>
             )}
           </div>
         )}
       </main>
       {newElementTag && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              submitItem();
-            }}
-            className="bg-white p-4 rounded shadow w-80 space-y-2"
-          >
-            <h3 className="font-semibold">
-              Add {newElementTag.toUpperCase()}
-            </h3>
-            <input
-              className="w-full border px-2 py-1"
-              placeholder="Text"
-              value={formData.text}
-              onChange={(e) =>
-                setFormData({ ...formData, text: e.target.value })
-              }
-            />
-            <input
-              className="w-full border px-2 py-1"
-              placeholder="Color (optional)"
-              value={formData.color}
-              onChange={(e) =>
-                setFormData({ ...formData, color: e.target.value })
-              }
-            />
-            <input
-              className="w-full border px-2 py-1"
-              placeholder="Font family (optional)"
-              value={formData.fontFamily}
-              onChange={(e) =>
-                setFormData({ ...formData, fontFamily: e.target.value })
-              }
-            />
-            <input
-              className="w-full border px-2 py-1"
-              placeholder="Font weight (optional)"
-              value={formData.fontWeight}
-              onChange={(e) =>
-                setFormData({ ...formData, fontWeight: e.target.value })
-              }
-            />
-            <input
-              className="w-full border px-2 py-1"
-              placeholder="Font size (optional)"
-              value={formData.fontSize}
-              onChange={(e) =>
-                setFormData({ ...formData, fontSize: e.target.value })
-              }
-            />
-            {newElementTag === "a" && (
-              <input
-                className="w-full border px-2 py-1"
-                placeholder="Link URL (href)"
-                value={formData.href}
-                onChange={(e) =>
-                  setFormData({ ...formData, href: e.target.value })
-                }
-              />
-            )}
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.shouldClick}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    shouldClick: e.target.checked,
-                    checkNavigation: e.target.checked
-                      ? formData.checkNavigation
-                      : false,
-                  })
-                }
-              />
-              <span className="text-sm">Verify click</span>
-            </label>
-            {formData.shouldClick && (
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={formData.checkNavigation}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-80">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                submitItem();
+              }}
+            >
+              <CardHeader>
+                <CardTitle>Add {newElementTag.toUpperCase()}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Input
+                  placeholder="Text"
+                  value={formData.text}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      checkNavigation: e.target.checked,
-                    })
+                    setFormData({ ...formData, text: e.target.value })
                   }
                 />
-                <span className="text-sm">Check navigation</span>
-              </label>
-            )}
-            {formData.shouldClick && formData.checkNavigation && (
-              <input
-                className="w-full border px-2 py-1"
-                placeholder="Navigation URL"
-                value={formData.navigationUrl}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    navigationUrl: e.target.value,
-                  })
-                }
-              />
-            )}
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.strict}
-                onChange={(e) =>
-                  setFormData({ ...formData, strict: e.target.checked })
-                }
-              />
-              <span className="text-sm">Use strict locator</span>
-            </label>
-            <div className="flex justify-end space-x-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setNewElementTag(null)}
-                className="px-2 py-1 text-sm bg-gray-200 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-          </form>
+                <Input
+                  placeholder="Color (optional)"
+                  value={formData.color}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
+                />
+                <Input
+                  placeholder="Font family (optional)"
+                  value={formData.fontFamily}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fontFamily: e.target.value })
+                  }
+                />
+                <Input
+                  placeholder="Font weight (optional)"
+                  value={formData.fontWeight}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fontWeight: e.target.value })
+                  }
+                />
+                <Input
+                  placeholder="Font size (optional)"
+                  value={formData.fontSize}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fontSize: e.target.value })
+                  }
+                />
+                {newElementTag === "a" && (
+                  <Input
+                    placeholder="Link URL (href)"
+                    value={formData.href}
+                    onChange={(e) =>
+                      setFormData({ ...formData, href: e.target.value })
+                    }
+                  />
+                )}
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="shouldClick" className="text-sm">
+                    Verify click
+                  </Label>
+                  <Switch
+                    id="shouldClick"
+                    checked={formData.shouldClick}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        shouldClick: checked,
+                        checkNavigation: checked
+                          ? formData.checkNavigation
+                          : false,
+                      })
+                    }
+                  />
+                </div>
+                {formData.shouldClick && (
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="checkNavigation" className="text-sm">
+                      Check navigation
+                    </Label>
+                    <Switch
+                      id="checkNavigation"
+                      checked={formData.checkNavigation}
+                      onCheckedChange={(checked) =>
+                        setFormData({
+                          ...formData,
+                          checkNavigation: checked,
+                        })
+                      }
+                    />
+                  </div>
+                )}
+                {formData.shouldClick && formData.checkNavigation && (
+                  <Input
+                    placeholder="Navigation URL"
+                    value={formData.navigationUrl}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        navigationUrl: e.target.value,
+                      })
+                    }
+                  />
+                )}
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="strict" className="text-sm">
+                    Use strict locator
+                  </Label>
+                  <Switch
+                    id="strict"
+                    checked={formData.strict}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, strict: checked })
+                    }
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setNewElementTag(null)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Add</Button>
+              </CardFooter>
+            </form>
+          </Card>
         </div>
       )}
     </div>
