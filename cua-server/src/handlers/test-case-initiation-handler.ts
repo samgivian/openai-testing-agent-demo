@@ -19,6 +19,7 @@ export async function handleTestCaseInitiated(
       password,
       userInfo,
       testItems,
+      model,
     } = data as {
       testCase: string;
       url: string;
@@ -27,6 +28,7 @@ export async function handleTestCaseInitiated(
       userInfo: string;
       testItems?: TestItem[];
       loginRequired?: boolean;
+      model?: string;
     };
     const loginRequired = data.loginRequired ?? true;
 
@@ -43,13 +45,13 @@ export async function handleTestCaseInitiated(
     // Create system prompt by combining form inputs.
     const msg = `${testCase} URL: ${url} User Name: ${userName} Password: *********\n USER INFO:\n${userInfo}`;
 
-    const testCaseAgent = new TestCaseAgent(loginRequired);
+    const testCaseAgent = new TestCaseAgent(loginRequired, model);
 
     const testCaseResponse = await testCaseAgent.invokeResponseAPI(msg);
     const testCaseJson = JSON.stringify(testCaseResponse);
 
     // Create a new test case review agent.
-    const testCaseReviewAgent = new TestScriptReviewAgent();
+    const testCaseReviewAgent = new TestScriptReviewAgent(model);
 
     logger.debug(
       `Invoking test script review agent - This should only be called once per test script run.`

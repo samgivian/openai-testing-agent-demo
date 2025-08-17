@@ -23,7 +23,17 @@ async function executeTestItems(
   for (const item of testItems) {
     try {
       let locator;
-      if (item.text) {
+      if (item.elementType) {
+        if (item.text) {
+          const selector =
+            item.textMatch === "exact"
+              ? `${item.elementType}:text-is("${item.text}")`
+              : `${item.elementType}:has-text("${item.text}")`;
+          locator = page.locator(selector);
+        } else {
+          locator = page.locator(item.elementType);
+        }
+      } else if (item.text) {
         // Allow callers to specify whether to look for an exact text match or
         // just check if the element contains the given text. Default behavior
         // is a substring match.

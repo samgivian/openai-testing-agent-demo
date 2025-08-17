@@ -19,12 +19,13 @@ export type TestCase = z.infer<typeof TestCaseSchema>;
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 class TestCaseAgent {
-  private readonly model = "o3-mini";
+  private readonly model: string;
   private readonly developer_prompt: string;
   private readonly login_required: boolean;
 
-  constructor(login_required = false) {
+  constructor(login_required = false, model = "o3-mini") {
     this.login_required = login_required;
+    this.model = model;
     this.developer_prompt = login_required
       ? PROMPT_WITH_LOGIN
       : PROMPT_WITHOUT_LOGIN;

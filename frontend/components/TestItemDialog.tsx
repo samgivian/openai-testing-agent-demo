@@ -17,6 +17,7 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
     url: "",
     text: "",
     shouldClick: false,
+    elementType: "",
     inputLabel: "",
     testId: "",
     inputValue: "",
@@ -51,6 +52,7 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
       url: "",
       text: "",
       shouldClick: false,
+      elementType: "",
       inputLabel: "",
       testId: "",
       inputValue: "",
@@ -81,13 +83,26 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
               onChange={(e) => setForm({ ...form, url: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
+        <div className="space-y-2">
             <Label htmlFor="text">Text</Label>
             <Input
               id="text"
               value={form.text}
               onChange={(e) => setForm({ ...form, text: e.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="elementType">Element Type</Label>
+            <select
+              id="elementType"
+              value={form.elementType}
+              onChange={(e) => setForm({ ...form, elementType: e.target.value })}
+              className="w-full rounded-md border px-2 py-1"
+            >
+              <option value="">None</option>
+              <option value="button">button</option>
+              <option value="h1">h1</option>
+            </select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="textMatch">Text Match</Label>
