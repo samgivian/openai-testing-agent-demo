@@ -29,6 +29,10 @@ async function executeTestItems(
         // is a substring match.
         const exact = item.textMatch === "exact";
         locator = page.getByText(item.text, { exact });
+      } else if (item.inputLabel) {
+        locator = page.getByLabel(item.inputLabel);
+      } else if (item.testId) {
+        locator = page.getByTestId(item.testId);
       } else if (item.url) {
         locator = page.locator(`a[href="${item.url}"]`);
       } else {
@@ -38,14 +42,27 @@ async function executeTestItems(
       if ((await locator.count()) === 0) {
         socket.emit(
           "message",
-          `Element not found for ${item.url || item.text}`
+          `Element not found for ${
+            item.url || item.text || item.inputLabel || item.testId
+          }`
         );
         continue;
       }
 
+      if (item.inputValue && (item.inputLabel || item.testId)) {
+        await locator.first().fill(item.inputValue);
+        socket.emit(
+          "message",
+          `Filled ${item.inputLabel || item.testId} with ${item.inputValue}`
+        );
+      }
+
       if (item.shouldClick) {
         await locator.first().click();
-        socket.emit("message", `Clicked ${item.text || item.url}`);
+        socket.emit(
+          "message",
+          `Clicked ${item.text || item.url || item.inputLabel || item.testId}`
+        );
       }
 
       if (item.checkNavigation && item.navigationUrl) {

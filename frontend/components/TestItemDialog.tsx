@@ -17,6 +17,9 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
     url: "",
     text: "",
     shouldClick: false,
+    inputLabel: "",
+    testId: "",
+    inputValue: "",
     checkNavigation: false,
     fontColor: "",
     fontSize: "",
@@ -48,6 +51,9 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
       url: "",
       text: "",
       shouldClick: false,
+      inputLabel: "",
+      testId: "",
+      inputValue: "",
       checkNavigation: false,
       fontColor: "",
       fontSize: "",
@@ -147,6 +153,30 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
               id="eventName"
               value={form.eventName}
               onChange={(e) => setForm({ ...form, eventName: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="inputLabel">Input Label</Label>
+            <Input
+              id="inputLabel"
+              value={form.inputLabel}
+              onChange={(e) => setForm({ ...form, inputLabel: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="testId">Test ID</Label>
+            <Input
+              id="testId"
+              value={form.testId}
+              onChange={(e) => setForm({ ...form, testId: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="inputValue">Input Value</Label>
+            <Input
+              id="inputValue"
+              value={form.inputValue}
+              onChange={(e) => setForm({ ...form, inputValue: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-2">
