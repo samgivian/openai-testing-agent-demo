@@ -143,6 +143,8 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
                       <li key={idx}>
                         {item.url}
                         {item.text ? ` - ${item.text}` : ""}
+                        {(item.inputLabel || item.testId) &&
+                          ` - input: ${item.inputLabel || `testId:${item.testId}`}=${item.inputValue}`}
                       </li>
                     ))}
                   </ul>
