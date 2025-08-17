@@ -4,6 +4,7 @@ import TestCaseAgent from "../agents/test-case-agent";
 import { convertTestCaseToSteps, TestCase } from "../utils/testCaseUtils";
 import { cuaLoopHandler } from "./cua-loop-handler";
 import TestScriptReviewAgent from "../agents/test-script-review-agent";
+import PlaywrightCodeAgent from "../agents/playwright-code-agent";
 
 export async function handleTestCaseInitiated(
   socket: Socket,
@@ -67,6 +68,11 @@ export async function handleTestCaseInitiated(
     const testScript = convertTestCaseToSteps(testCaseResponse as TestCase);
 
     logger.debug(`Test script: ${testScript}`);
+
+    // Generate Playwright code for the test script and send to client
+    const playwrightAgent = new PlaywrightCodeAgent();
+    const code = await playwrightAgent.generateCode(testScript);
+    socket.emit("testcode", code);
 
     // Start the test execution using the provided URL.
     // Pass the test case review agent to the cuaLoopHandler.

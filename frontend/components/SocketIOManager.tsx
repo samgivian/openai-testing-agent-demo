@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 
 import useConversationStore from "@/stores/useConversationStore";
 import useTaskStore from "@/stores/useTaskStore";
+import useCodeStore from "@/stores/useCodeStore";
 
 /** One singleton client socket. */
 let socket: Socket | null = null;
@@ -31,6 +32,7 @@ export function SocketIOManager() {
   );
   const setTestCases = useTaskStore((s) => s.setTestCases);
   const updateTestScript = useTaskStore((s) => s.updateTestScript);
+  const setTestCode = useCodeStore((s) => s.setTestCode);
 
   useEffect(() => {
     // Connect to standalone WebSocket server
@@ -50,6 +52,10 @@ export function SocketIOManager() {
         } catch (err) {
           console.error("✖ parse testcases", err);
         }
+      });
+
+      socket.on("testcode", (code: string) => {
+        setTestCode(code);
       });
 
       /* step‑by‑step status updates */
@@ -82,7 +88,13 @@ export function SocketIOManager() {
       socket?.disconnect();
       socket = null;
     };
-  }, [addChatMessage, addConversationItem, setTestCases, updateTestScript]);
+  }, [
+    addChatMessage,
+    addConversationItem,
+    setTestCases,
+    updateTestScript,
+    setTestCode,
+  ]);
 
   return null;
 }
