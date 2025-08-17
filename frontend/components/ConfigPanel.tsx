@@ -30,6 +30,7 @@ interface ConfigPanelProps {
 export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
   const { testCase, setTestCase } = useTestCaseStore();
   const [url, setUrl] = useState(TEST_APP_URL);
+  const [model, setModel] = useState("o3-mini");
   const [submitting, setSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [testItems, setTestItems] = useState<TestItem[]>([]);
@@ -51,6 +52,7 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
         testCase,
         url,
         testItems,
+        model,
       });
 
     onSubmitted?.(testCase);
@@ -117,6 +119,21 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
                   className="flex-1"
                 />
               </div>
+              <div className="flex items-center gap-3">
+                <Label
+                  htmlFor="model"
+                  className="flex items-center gap-2 whitespace-nowrap w-24"
+                >
+                  Model
+                </Label>
+                <Input
+                  id="model"
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  disabled={submitting}
+                  className="flex-1"
+                />
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="test-case">Test instructions</Label>
@@ -142,6 +159,7 @@ export default function ConfigPanel({ onSubmitted }: ConfigPanelProps) {
                   <ul className="list-disc list-inside text-sm">
                     {testItems.map((item, idx) => (
                       <li key={idx}>
+                        {item.elementType ? `${item.elementType} ` : ""}
                         {item.url}
                         {item.text ? ` - ${item.text}` : ""}
                         {(item.inputLabel || item.testId) &&

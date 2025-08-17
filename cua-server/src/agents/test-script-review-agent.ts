@@ -40,9 +40,9 @@ class TestScriptReviewAgent {
   private taskQueue: Task[] = [];
   private processingQueue: boolean = false;
 
-  constructor() {
-    // Set the default model to "gpt-4o"
-    this.model = "gpt-4o";
+  constructor(model: string = "gpt-4o") {
+    // Set the default model, allowing override
+    this.model = model;
 
     // Maintain the previous response id.
     this.previous_response_id = null;
