@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import TestCaseGenerator from "@/components/TestCaseGenerator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -331,72 +332,77 @@ export default function TestBuilder() {
           </div>
         )}
       </aside>
-      <main className="flex-1 p-4 overflow-auto">
-        {tests[currentTest].items.map((item, idx) => {
-          if (item.kind === "element") {
-            if (item.type === "input") {
+      <main className="flex-1 flex">
+        <div className="flex-1 p-4 overflow-auto">
+          {tests[currentTest].items.map((item, idx) => {
+            if (item.kind === "element") {
+              if (item.type === "input") {
+                return (
+                  <input
+                    key={idx}
+                    className="mb-2 px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-100"
+                    placeholder={item.text}
+                    style={{
+                      color: item.color,
+                      fontFamily: item.fontFamily,
+                      fontWeight: item.fontWeight,
+                      fontSize: item.fontSize,
+                    }}
+                  />
+                );
+              }
+              const Tag = item.type as keyof JSX.IntrinsicElements;
+              const anchorProps =
+                item.type === "a" && item.href ? { href: item.href } : {};
               return (
-                <input
+                <Tag
                   key={idx}
-                  className="mb-2 px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-100"
-                  placeholder={item.text}
+                  className="mb-2"
                   style={{
                     color: item.color,
                     fontFamily: item.fontFamily,
                     fontWeight: item.fontWeight,
                     fontSize: item.fontSize,
                   }}
-                />
+                  {...anchorProps}
+                >
+                  {item.text}
+                </Tag>
               );
             }
-            const Tag = item.type as keyof JSX.IntrinsicElements;
-            const anchorProps =
-              item.type === "a" && item.href ? { href: item.href } : {};
             return (
-              <Tag
-                key={idx}
-                className="mb-2"
-                style={{
-                  color: item.color,
-                  fontFamily: item.fontFamily,
-                  fontWeight: item.fontWeight,
-                  fontSize: item.fontSize,
-                }}
-                {...anchorProps}
-              >
-                {item.text}
-              </Tag>
+              <p key={idx} className="mb-2 text-slate-400">
+                Scroll {item.amount}px
+              </p>
             );
-          }
-          return (
-            <p key={idx} className="mb-2 text-slate-400">
-              Scroll {item.amount}px
-            </p>
-          );
-        })}
-        {hasAnyItems && (
-          <div className="mt-4">
-            <h2 className="font-semibold mb-2">Generated Test Suite</h2>
-            <Textarea
-              className="font-mono bg-slate-800 text-slate-100 border-slate-700"
-              rows={10}
-              value={specText}
-              onChange={(e) => {
-                setSpecEdited(true);
-                setSpecText(e.target.value);
-              }}
-            />
-            {specEdited && (
-              <Button
-                onClick={regenerateSpec}
-                variant="builder"
-                className="mt-2"
-              >
-                Reset to Generated Code
-              </Button>
-            )}
-          </div>
-        )}
+          })}
+          {hasAnyItems && (
+            <div className="mt-4">
+              <h2 className="font-semibold mb-2">Generated Test Suite</h2>
+              <Textarea
+                className="font-mono bg-slate-800 text-slate-100 border-slate-700"
+                rows={10}
+                value={specText}
+                onChange={(e) => {
+                  setSpecEdited(true);
+                  setSpecText(e.target.value);
+                }}
+              />
+              {specEdited && (
+                <Button
+                  onClick={regenerateSpec}
+                  variant="builder"
+                  className="mt-2"
+                >
+                  Reset to Generated Code
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="w-96 p-4 border-l border-slate-700 overflow-auto bg-slate-900">
+          <TestCaseGenerator />
+        </div>
       </main>
       {newElementTag && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
