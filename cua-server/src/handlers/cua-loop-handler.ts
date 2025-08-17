@@ -24,7 +24,11 @@ async function executeTestItems(
     try {
       let locator;
       if (item.text) {
-        locator = page.getByText(item.text);
+        // Allow callers to specify whether to look for an exact text match or
+        // just check if the element contains the given text. Default behavior
+        // is a substring match.
+        const exact = item.textMatch === "exact";
+        locator = page.getByText(item.text, { exact });
       } else if (item.url) {
         locator = page.locator(`a[href="${item.url}"]`);
       } else {

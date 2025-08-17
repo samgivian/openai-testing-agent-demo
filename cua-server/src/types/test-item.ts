@@ -9,4 +9,9 @@ export interface TestItem {
   fontType?: string;
   navigationUrl?: string;
   eventName?: string;
+  /**
+   * How text should be matched on the page. Defaults to substring matching
+   * ("contains") when not specified.
+   */
+  textMatch?: "exact" | "contains";
 }
