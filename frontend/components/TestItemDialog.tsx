@@ -24,6 +24,7 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
     fontType: "",
     navigationUrl: "",
     eventName: "",
+    textMatch: "contains",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +55,7 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
       fontType: "",
       navigationUrl: "",
       eventName: "",
+      textMatch: "contains",
     });
     onClose();
   };
@@ -80,6 +82,20 @@ export default function TestItemDialog({ open, onClose, onAdd }: TestItemDialogP
               value={form.text}
               onChange={(e) => setForm({ ...form, text: e.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="textMatch">Text Match</Label>
+            <select
+              id="textMatch"
+              value={form.textMatch}
+              onChange={(e) =>
+                setForm({ ...form, textMatch: e.target.value as "contains" | "exact" })
+              }
+              className="w-full rounded-md border px-2 py-1"
+            >
+              <option value="contains">Contains</option>
+              <option value="exact">Exact</option>
+            </select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="fontColor">Font Color</Label>
