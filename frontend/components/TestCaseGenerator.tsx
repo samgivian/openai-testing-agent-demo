@@ -32,7 +32,7 @@ export default function TestCaseGenerator() {
         placeholder="Describe the scenario to test"
         value={scenario}
         onChange={(e) => setScenario(e.target.value)}
-        className="bg-slate-800 text-slate-100 border-slate-700"
+        className="bg-card text-foreground border-border"
         rows={5}
       />
       <Button
@@ -47,7 +47,7 @@ export default function TestCaseGenerator() {
         placeholder="Playwright test code will appear here"
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        className="font-mono bg-slate-800 text-slate-100 border-slate-700 min-h-[200px]"
+        className="font-mono bg-card text-foreground border-border min-h-[200px]"
       />
     </div>
   );
