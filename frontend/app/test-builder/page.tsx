@@ -269,8 +269,8 @@ export default function TestBuilder() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-900 text-slate-100">
-      <aside className="w-48 p-4 border-r border-slate-700 space-y-2 bg-slate-800 overflow-y-auto">
+    <div className="flex h-screen bg-background text-foreground">
+      <aside className="w-48 p-4 border-r border-border space-y-2 bg-card overflow-y-auto">
         <Button onClick={setRouteHandler} className="w-full" variant="builder">
           Set Route
         </Button>
@@ -340,7 +340,7 @@ export default function TestBuilder() {
                 return (
                   <input
                     key={idx}
-                    className="mb-2 px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-100"
+                    className="mb-2 px-2 py-1 rounded border border-border bg-input text-foreground"
                     placeholder={item.text}
                     style={{
                       color: item.color,
@@ -371,7 +371,7 @@ export default function TestBuilder() {
               );
             }
             return (
-              <p key={idx} className="mb-2 text-slate-400">
+              <p key={idx} className="mb-2 text-muted-foreground">
                 Scroll {item.amount}px
               </p>
             );
@@ -380,7 +380,7 @@ export default function TestBuilder() {
             <div className="mt-4">
               <h2 className="font-semibold mb-2">Generated Test Suite</h2>
               <Textarea
-                className="font-mono bg-slate-800 text-slate-100 border-slate-700"
+                className="font-mono bg-card text-foreground border-border"
                 rows={10}
                 value={specText}
                 onChange={(e) => {
@@ -400,13 +400,13 @@ export default function TestBuilder() {
             </div>
           )}
         </div>
-        <div className="w-96 p-4 border-l border-slate-700 overflow-auto bg-slate-900">
+        <div className="w-96 p-4 border-l border-border overflow-auto bg-card">
           <TestCaseGenerator />
         </div>
       </main>
       {newElementTag && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-80 bg-slate-800 text-slate-100 border-slate-700">
+        <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
+          <Card className="w-80">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -418,7 +418,6 @@ export default function TestBuilder() {
               </CardHeader>
               <CardContent className="space-y-2">
                 <Input
-                  className="bg-slate-700 border-slate-600"
                   placeholder="Text"
                   value={formData.text}
                   onChange={(e) =>
@@ -426,7 +425,6 @@ export default function TestBuilder() {
                   }
                 />
                 <Input
-                  className="bg-slate-700 border-slate-600"
                   placeholder="Color (optional)"
                   value={formData.color}
                   onChange={(e) =>
@@ -434,7 +432,6 @@ export default function TestBuilder() {
                   }
                 />
                 <Input
-                  className="bg-slate-700 border-slate-600"
                   placeholder="Font family (optional)"
                   value={formData.fontFamily}
                   onChange={(e) =>
@@ -442,7 +439,6 @@ export default function TestBuilder() {
                   }
                 />
                 <Input
-                  className="bg-slate-700 border-slate-600"
                   placeholder="Font weight (optional)"
                   value={formData.fontWeight}
                   onChange={(e) =>
@@ -450,7 +446,6 @@ export default function TestBuilder() {
                   }
                 />
                 <Input
-                  className="bg-slate-700 border-slate-600"
                   placeholder="Font size (optional)"
                   value={formData.fontSize}
                   onChange={(e) =>
@@ -459,7 +454,6 @@ export default function TestBuilder() {
                 />
                 {newElementTag === "a" && (
                   <Input
-                    className="bg-slate-700 border-slate-600"
                     placeholder="Link URL (href)"
                     value={formData.href}
                     onChange={(e) =>
@@ -504,7 +498,6 @@ export default function TestBuilder() {
                 )}
                 {formData.shouldClick && formData.checkNavigation && (
                   <Input
-                    className="bg-slate-700 border-slate-600"
                     placeholder="Navigation URL"
                     value={formData.navigationUrl}
                     onChange={(e) =>
