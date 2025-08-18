@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { SocketIOManager } from "@/components/SocketIOManager";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,9 +33,10 @@ export default function RootLayout({
         <SocketIOManager />
 
         <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
-          <nav className="p-4 border-b border-border flex gap-4">
+          <nav className="p-4 border-b border-border flex gap-4 items-center">
             <Link href="/test-builder">Test Builder</Link>
             <Link href="/testcase">Test Case Generator</Link>
+            <ThemeToggle />
           </nav>
           <main className="flex-1 min-h-0 flex flex-col">{children}</main>
         </div>
