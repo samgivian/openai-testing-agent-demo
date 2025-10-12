@@ -113,3 +113,54 @@
     @apply bg-background text-foreground;
   }
 }
+
+.banana-animation {
+  position: relative;
+  display: inline-flex;
+  width: 9rem;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.banana-animation::after {
+  content: "";
+  position: absolute;
+  inset-inline: 14%;
+  bottom: -8%;
+  height: 18%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
+  opacity: 0.35;
+  filter: blur(6px);
+  transform: scaleX(1.05);
+  pointer-events: none;
+}
+
+.banana-animation .banana-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.banana-animation .banana-sway {
+  animation: banana-sway 4.5s ease-in-out infinite;
+  transform-origin: 58% 35%;
+}
+
+@keyframes banana-sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banana-animation .banana-sway {
+    animation: none;
+  }
+  .banana-animation::after {
+    opacity: 0.2;
+  }
+}
